@@ -519,6 +519,13 @@ checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 [[package]]
 name = "package_manager"
 version = "0.1.0"
+dependencies = [
+ "clap",
+ "serde",
+ "serde_yaml",
+ "sha256",
+ "traits",
+]
 
 [[package]]
 name = "percent-encoding"
@@ -720,6 +727,16 @@ dependencies = [
  "hex",
  "sha2",
  "tokio",
+]
+
+[[package]]
+name = "shapkg"
+version = "0.1.0"
+dependencies = [
+ "fetch-data",
+ "package_manager",
+ "serde_yaml",
+ "sha256",
 ]
 
 [[package]]

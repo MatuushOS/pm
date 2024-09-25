@@ -1,10 +1,12 @@
 #![warn(clippy::all, clippy::pedantic)]
 #![cfg(target_os = "linux")]
+use std::fs::read_to_string;
+
 use clap::Parser;
 use impls::Builder;
-use traits::Building;
-mod impls;
-mod macros;
+use traits::{Building, DependencyResolution};
+pub mod impls;
+pub mod macros;
 #[derive(Parser)]
 #[clap(name = "pm", about = "Package manager", long_about = None)]
 struct Cli {
@@ -20,36 +22,9 @@ struct Cli {
 
 fn main() {
     let arge = Cli::parse();
-    if let Some(pm) = arge.install {
-        for i in pm {
-            {
-                let pkg = i.as_str();
-                let b = crate::impls::Builder::default();
-                b.prep(pkg).unwrap();
-                b.build(pkg).unwrap();
-                b.install(pkg).unwrap();
-            }
-        }
-    }
-    if let Some(pm) = arge.remove {
-        for i in pm {
-            {
-                let pkg = i.as_str();
-                let b = crate::impls::Builder::default();
-                b.remove(pkg).unwrap();
-            }
-        }
-    }
-    if let Some(pm) = arge.query {
-        for i in pm {
-            {
-                let pkg = i.as_str();
-                let b = crate::impls::Builder::default();
-                b.query(pkg).unwrap()
-            }
-        }
-    }
-    if let Some(cfg) = arge.create {
-        Builder::default().write(cfg.as_str()).unwrap()
+    for p in arge.remove.unwrap() {
+        let f = std::fs::read_to_string(p).unwrap();
+        let cfg: Builder = serde_yaml::from_str(&f).unwrap();
+        
     }
 }

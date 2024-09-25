@@ -22,10 +22,11 @@ struct Build(Vec<Step>);
 #[derive(Serialize, Deserialize, Default, Clone)]
 struct Install(Vec<Step>);
 #[derive(Serialize, Deserialize, Default, Clone)]
-struct Fetch {
+pub struct Fetch {
     name: String,
     ft: String,
-    src: String,
+    pub src: String,
+    pub sha256: String,
 }
 #[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Builder {
@@ -34,7 +35,7 @@ pub struct Builder {
     version: (i32, i32, i32),
     sha256: String,
     dependencies: Vec<Deps>,
-    dl: Vec<Fetch>,
+    pub dl: Vec<Fetch>,
     prepare: Prepare,
     build: Build,
     install: Install,
@@ -56,7 +57,7 @@ impl Filling for Builder {
         self.name = cfg.name;
         self.dependencies = cfg.dependencies;
         self.category = cfg.category;
-        
+
         Ok(())
     }
 }
@@ -75,14 +76,15 @@ impl Building for Builder {
             println!("Nothing to resolve");
         } else {
             for i in self.dependencies.iter() {
-                self.clone().resolve(format!("{}/{}.yml", i.category, i.name).as_str())?;
+                self.clone()
+                    .resolve(format!("{}/{}.yml", i.category, i.name).as_str())?;
             }
         }
         println!("Making package {}", pkg);
         for i in &self.dl {
-            println!("Downloading {}.{} to {}",i.name, i.ft, i.src);
+            println!("Downloading {}.{} to {}", i.name, i.ft, i.src);
         }
-        
+
         Ok(())
     }
 

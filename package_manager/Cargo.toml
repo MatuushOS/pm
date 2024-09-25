@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+clap = { version = "4.5.18", features = ["derive"] }
+serde = { version = "1.0.210", features = ["derive"] }
+serde_yaml = "0.9.34"
+sha256 = "1.5.0"
+traits = { version = "0.1.0", path = "../libs/traits" }
+
