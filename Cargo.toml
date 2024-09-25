@@ -3,7 +3,7 @@ name = "mtos-docker"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
+[workspace.dependencies]
 clap = { version = "4.5.18", features = ["derive"] }
 fetch-data = "0.2.0"
 filedb-ng = "0.1.1"
@@ -12,8 +12,9 @@ serde = { version = "1.0.210", features = ["derive"] }
 serde_yaml = "0.9.34"
 sha256 = "1.5.0"
 traits = {path = "libs/traits", version = "*"}
+package_manager = {version = "*", path = "package_manager"}
 [workspace]
-members = ["package_manager", "libs/colors", "libs/traits", "helpers/shapkg"]
+members = ["package_manager", "libs/colors", "libs/traits", "helpers/shapkg", "helpers/mkrepo"]
 
 [[bin]]
 name = "pm"
@@ -22,3 +23,9 @@ path = "package_manager/src/main.rs"
 [lib]
 name = "colors"
 path = "libs/colors/src/lib.rs"
+
+[dependencies]
+clap = { workspace = true, features = ["derive"] }
+serde = { workspace = true, features = ["derive"] }
+serde_yaml.workspace = true
+sha256.workspace = true

@@ -482,17 +482,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "mkrepo"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "filedb-ng",
+ "package_manager",
+ "serde",
+ "serde_yaml",
+]
+
+[[package]]
 name = "mtos-docker"
 version = "0.1.0"
 dependencies = [
  "clap",
- "fetch-data",
- "filedb-ng",
- "semver",
  "serde",
  "serde_yaml",
  "sha256",
- "traits",
 ]
 
 [[package]]
@@ -656,12 +663,6 @@ name = "ryu"
 version = "1.0.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f3cb5ba0dc43242ce17de99c180e96db90b235b8a9fdc9543c96d2209116bd9f"
-
-[[package]]
-name = "semver"
-version = "1.0.23"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "serde"

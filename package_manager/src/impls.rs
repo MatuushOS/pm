@@ -31,7 +31,7 @@ pub struct Fetch {
 #[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Builder {
     name: String,
-    category: String,
+    pub category: String,
     version: (i32, i32, i32),
     sha256: String,
     dependencies: Vec<Deps>,
@@ -55,9 +55,13 @@ impl Filling for Builder {
         let f = read_to_string(f)?;
         let cfg: Self = from_str(&f)?;
         self.name = cfg.name;
-        self.dependencies = cfg.dependencies;
         self.category = cfg.category;
-
+        self.version = cfg.version;
+        self.dependencies = cfg.dependencies;
+        self.prepare = cfg.prepare;
+        self.build = cfg.build;
+        self.install = cfg.install;
+        self.dl = cfg.dl;
         Ok(())
     }
 }

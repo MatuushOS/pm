@@ -1,12 +1,11 @@
 [package]
-name = "package_manager"
+name = "mkrepo"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 clap = { version = "4.5.18", features = ["derive"], workspace = true}
+filedb-ng = "0.1.1"
 serde = { version = "1.0.210", features = ["derive"], workspace = true}
 serde_yaml = {version = "0.9.34", workspace = true}
-sha256 = {version = "1.5.0", workspace = true}
-traits = { version = "0.1.0", path = "../libs/traits"}
-
+package_manager = {path = "../../package_manager", version = "*", workspace = true}
