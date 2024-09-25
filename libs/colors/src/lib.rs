@@ -1,14 +1,21 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
+const YELLOW: &str = "\x1b[38;5;220m";
+const BLUE: &str = "\x1b[38;5;57m";
+const RED: &str = "\x1b[38;5;197m";
+#[derive(Default)]
+pub enum ArrowType {
+    #[default]
+    Info,
+    Warning,
+    Error,
+    Huh,
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+impl ArrowType {
+    pub fn set_type(self, t: Self) -> String {
+        match t {
+            ArrowType::Info => format!("{BLUE}==>").to_string(),
+            ArrowType::Warning => format!("{YELLOW}=!!").to_string(),
+            ArrowType::Error => format!("{RED}=!!").to_string(),
+            ArrowType::Huh => format!("{YELLOW}=??").to_string(),
+        }
     }
 }
