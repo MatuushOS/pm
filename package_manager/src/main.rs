@@ -1,9 +1,8 @@
-#![warn(clippy::all, clippy::pedantic)]
+#![warn(clippy::all, clippy::pedantic, clippy::perf)]
 #![cfg(target_os = "linux")]
-
 use clap::Parser;
 use impls::Builder;
-use traits::{Building, Filling};
+use traits::{Building, DependencyResolution, Filling};
 pub mod impls;
 pub mod macros;
 #[derive(Parser)]
@@ -37,7 +36,7 @@ fn main() {
             let f = std::fs::read_to_string(i).unwrap();
             let mut b = Builder::default();
             b.fill(f.as_str()).unwrap();
-            b.remove(&f).unwrap();
+            b.resolve().unwrap();
         }
     } else if arge.query.is_some() {
         for q in arge.query.unwrap() {

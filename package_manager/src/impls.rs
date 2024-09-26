@@ -73,26 +73,27 @@ impl Filling for Builder {
     }
 }
 impl DependencyResolution for Builder {
-    fn resolve(&mut self, pkg: &str) -> Result<(), Box<dyn Error>> {
-        self.prep(pkg)?;
-        self.build(pkg)?;
-        self.install(pkg)?;
+    fn resolve(&mut self) -> Result<(), Box<dyn Error>> {
+        &self.prep()?;
+        &self.build()?;
+        &self.install()?;
         Ok(())
     }
 }
 impl Building for Builder {
     /// Mainly dependency resolution and downloads
-    fn prep(&mut self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn prep(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         if self.dependencies.is_empty() {
             println!("Nothing to resolve");
         } else {
             for i in self.dependencies.iter() {
                 self.clone()
-                    .resolve(format!("{}/{}.yml", i.category, i.name).as_str())?;
+                    .fill(format!("{}/{}.yml", i.category, i.name).as_str())?;
+                self.clone().resolve()?;
             }
         }
-        println!("Making package {}", pkg);
-        for i in &mut self.dl {
+        println!("Making package {}", self.name);
+        for i in self.dl.clone().iter() {
             println!("Downloading {}.{} to {}", i.name, i.ft, i.src);
             let path = Path::new(temp_dir().clone().as_path()).join(format!("{}{}", i.name, i.ft));
             if hash_download(i.clone().src, &path)? != i.sha256 {
@@ -104,17 +105,24 @@ impl Building for Builder {
             }
         }
         println!("Running pre-build steps");
-        for i in &mut self.prepare.0 {
-            let arge = i.cmd.iter().len();
+        (&self.prepare.0).into_iter().for_each(|i| {
+            let arge = i.cmd.len();
             println!("\tRunning step {}", i.name);
-            Command::new(i.cmd[0].clone())
-                .args(&mut i.cmd[1..arge])
-                .output()?;
-        }
+            match Command::new(i.cmd[0].clone())
+                .args(&i.cmd[1..arge])
+                .output()
+            {
+                Ok(ok) => println!("{:#?}", ok.stdout.iter()),
+                Err(e) => {
+                    eprintln!("{:#?}", e);
+                    exit(1)
+                }
+            }
+        });
         Ok(())
     }
 
-    fn build(&mut self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn build(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         for i in &mut self.build.0 {
             let arge = i.cmd.iter().len();
             println!("\tRunning step {}", i.name);
@@ -125,11 +133,22 @@ impl Building for Builder {
         Ok(())
     }
 
-    fn install(&mut self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn install(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        std::fs::DirBuilder::new().recursive(true).create(format!(
+            "/mtos/pkgs/{}+{}{}{}+{}",
+            self.name, self.version.0, self.version.1, self.version.2, self.sha256
+        ))?;
         for i in &mut self.install.0 {
             let arge = i.cmd.iter().len();
             println!("\tRunning step {}", i.name);
             Command::new(i.cmd[0].clone())
+                .env(
+                    "INSTDIR",
+                    Path::new("/mtos/pkgs").join(format!(
+                        "{}+{}{}{}+{}",
+                        self.name, self.version.0, self.version.1, self.version.2, self.sha256
+                    )),
+                )
                 .args(&mut i.cmd[1..arge])
                 .output()?;
         }
