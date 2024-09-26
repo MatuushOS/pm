@@ -1,13 +1,14 @@
 use compress_tools::Ownership;
-use fetch_data::{download, hash_download};
+use fetch_data::hash_download;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
+use crate::automate;
 use std::{
     env::temp_dir,
     error::Error,
     fs::read_to_string,
     path::Path,
-    process::{exit, Command},
+    process::exit,
 };
 use traits::{Building, DependencyResolution, Filling};
 #[derive(Serialize, Deserialize, Default, Clone)]
@@ -100,38 +101,21 @@ impl Building for Builder {
                 eprintln!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
                 exit(1);
             } else {
-                compress_tools::uncompress_archive(path, "src", Ownership::Preserve)?;
+                // compress_tools::uncompress_archive(&path, "src", Ownership::Preserve)?;
             }
         }
         println!("Running pre-build steps");
-        for prep in &mut self.prepare.0 {
-            println!("\tRunning step: {}", prep.name);
-            std::process::Command::new(&prep.cmd[0])
-                .args(&mut prep.cmd[1..i.cmd.len()])
-                .output()?;
-        }
+        crate::macros::automate!(prepare);
         Ok(())
     }
 
     fn build(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
-        println!("Running build steps");
-        for build in &mut self.build.0 {
-            println!("\tRunning step {}", build.name);
-            Command::new(&build.cmd[0])
-                .args(&mut build.cmd[1..build.cmd.iter().len()])
-                .output()?;
-        }
+        crate::macros::automate!(build);
         Ok(())
     }
 
     fn install(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
-        println!("Running install steps");
-        for inst in &mut self.install.0 {
-            println!("\tRunning step {}", inst.name);
-            Command::new(&inst.cmd[0])
-                .args(&mut inst.cmd[1..inst.cmd.iter().len()])
-                .output()?;
-        }
+        crate::macros::automate!(install);
         Ok(())
     }
 
