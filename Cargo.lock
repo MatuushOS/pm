@@ -554,7 +554,6 @@ name = "package_manager"
 version = "0.1.0"
 dependencies = [
  "clap",
- "compress-tools",
  "fetch-data",
  "serde",
  "serde_yaml",
