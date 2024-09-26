@@ -1,8 +1,15 @@
+use compress_tools::Ownership;
+use fetch_data::{download, hash_download};
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
-use std::{error::Error, fs::read_to_string, path::Path};
+use std::{
+    env::temp_dir,
+    error::Error,
+    fs::read_to_string,
+    path::Path,
+    process::{exit, Command},
+};
 use traits::{Building, DependencyResolution, Filling};
-
 #[derive(Serialize, Deserialize, Default, Clone)]
 struct Deps {
     name: String,
@@ -85,18 +92,46 @@ impl Building for Builder {
             }
         }
         println!("Making package {}", pkg);
-        for i in &self.dl {
+        for i in &mut self.dl {
             println!("Downloading {}.{} to {}", i.name, i.ft, i.src);
+            let path = Path::new(temp_dir().clone().as_path()).join(format!("{}{}", i.name, i.ft));
+            if hash_download(i.clone().src, &path)? != i.sha256 {
+                std::fs::remove_file(path)?;
+                eprintln!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
+                exit(1);
+            } else {
+                compress_tools::uncompress_archive(path, "src", Ownership::Preserve)?;
+            }
         }
-
+        println!("Running pre-build steps");
+        for prep in &mut self.prepare.0 {
+            println!("\tRunning step: {}", prep.name);
+            std::process::Command::new(&prep.cmd[0])
+                .args(&mut prep.cmd[1..i.cmd.len()])
+                .output()?;
+        }
         Ok(())
     }
 
     fn build(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+        println!("Running build steps");
+        for build in &mut self.build.0 {
+            println!("\tRunning step {}", build.name);
+            Command::new(&build.cmd[0])
+                .args(&mut build.cmd[1..build.cmd.iter().len()])
+                .output()?;
+        }
         Ok(())
     }
 
     fn install(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+        println!("Running install steps");
+        for inst in &mut self.install.0 {
+            println!("\tRunning step {}", inst.name);
+            Command::new(&inst.cmd[0])
+                .args(&mut inst.cmd[1..inst.cmd.iter().len()])
+                .output()?;
+        }
         Ok(())
     }
 
