@@ -10,7 +10,7 @@ filedb-ng = "0.1.1"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_yaml = "0.9.34"
 sha256 = "1.5.0"
-compress-tools = "0.15.1"
+# compress-tools = "0.15.1"
 traits = {path = "libs/traits", version = "*"}
 package_manager = {version = "*", path = "./package_manager"}
 [workspace]
@@ -31,4 +31,4 @@ serde_yaml.workspace = true
 sha256.workspace = true
 traits.workspace = true
 fetch-data.workspace = true
-compress-tools.workspace = true
+# compress-tools.workspace = true

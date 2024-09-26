@@ -1,6 +1,6 @@
 use std::error::Error;
 pub trait DependencyResolution {
-    fn resolve(self, pkg: &str) -> Result<(), Box<dyn Error>>;
+    fn resolve(&mut self, pkg: &str) -> Result<(), Box<dyn Error>>;
 }
 
 pub trait Filling {
@@ -8,9 +8,9 @@ pub trait Filling {
 }
 
 pub trait Building: DependencyResolution + Filling {
-    fn prep(&self, pkg: &str) -> Result<(), Box<dyn Error>>;
-    fn build(&self, pkg: &str) -> Result<(), Box<dyn Error>>;
-    fn install(&self, pkg: &str) -> Result<(), Box<dyn Error>>;
+    fn prep(&mut self, pkg: &str) -> Result<(), Box<dyn Error>>;
+    fn build(&mut self, pkg: &str) -> Result<(), Box<dyn Error>>;
+    fn install(&mut self, pkg: &str) -> Result<(), Box<dyn Error>>;
     fn remove(&self, pkg: &str) -> Result<(), Box<dyn Error>>;
     fn query(&self, pkg: &str) -> Result<(), Box<dyn Error>>;
 }

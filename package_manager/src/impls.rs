@@ -2,13 +2,12 @@
 use fetch_data::hash_download;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
-use crate::automate;
 use std::{
     env::temp_dir,
     error::Error,
     fs::read_to_string,
     path::Path,
-    process::exit,
+    process::{exit, Command},
 };
 use traits::{Building, DependencyResolution, Filling};
 #[derive(Serialize, Deserialize, Default, Clone)]
@@ -74,7 +73,7 @@ impl Filling for Builder {
     }
 }
 impl DependencyResolution for Builder {
-    fn resolve(self, pkg: &str) -> Result<(), Box<dyn Error>> {
+    fn resolve(&mut self, pkg: &str) -> Result<(), Box<dyn Error>> {
         self.prep(pkg)?;
         self.build(pkg)?;
         self.install(pkg)?;
@@ -83,7 +82,7 @@ impl DependencyResolution for Builder {
 }
 impl Building for Builder {
     /// Mainly dependency resolution and downloads
-    fn prep(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+    fn prep(&mut self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
         if self.dependencies.is_empty() {
             println!("Nothing to resolve");
         } else {
@@ -105,17 +104,35 @@ impl Building for Builder {
             }
         }
         println!("Running pre-build steps");
-        crate::macros::automate!(prepare);
+        for i in &mut self.prepare.0 {
+            let arge = i.cmd.iter().len();
+            println!("\tRunning step {}", i.name);
+            Command::new(i.cmd[0].clone())
+                .args(&mut i.cmd[1..arge])
+                .output()?;
+        }
         Ok(())
     }
 
-    fn build(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
-        crate::macros::automate!(build);
+    fn build(&mut self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+        for i in &mut self.build.0 {
+            let arge = i.cmd.iter().len();
+            println!("\tRunning step {}", i.name);
+            Command::new(i.cmd[0].clone())
+                .args(&mut i.cmd[1..arge])
+                .output()?;
+        }
         Ok(())
     }
 
-    fn install(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
-        crate::macros::automate!(install);
+    fn install(&mut self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+        for i in &mut self.install.0 {
+            let arge = i.cmd.iter().len();
+            println!("\tRunning step {}", i.name);
+            Command::new(i.cmd[0].clone())
+                .args(&mut i.cmd[1..arge])
+                .output()?;
+        }
         Ok(())
     }
 

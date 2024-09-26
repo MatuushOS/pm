@@ -6,7 +6,6 @@ use impls::Builder;
 use traits::{Building, Filling};
 pub mod impls;
 pub mod macros;
-pub use macros::automate;
 #[derive(Parser)]
 #[clap(name = "pm", about = "Package manager", long_about = None)]
 struct Cli {
