@@ -53,9 +53,6 @@ impl Builder {
         std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
         Ok(())
     }
-    fn check(self, pkg: &str) -> Result<String, Box<dyn Error>> {
-        Ok(sha256::try_digest(Path::new(pkg)).unwrap())
-    }
 }
 impl Filling for Builder {
     fn fill(&mut self, f: &str) -> Result<(), Box<dyn Error>> {
@@ -74,9 +71,9 @@ impl Filling for Builder {
 }
 impl DependencyResolution for Builder {
     fn resolve(&mut self) -> Result<(), Box<dyn Error>> {
-        &self.prep()?;
-        &self.build()?;
-        &self.install()?;
+        self.prep()?;
+        self.build()?;
+        self.install()?;
         Ok(())
     }
 }
@@ -145,17 +142,23 @@ impl Building for Builder {
                 .env(
                     "INSTDIR",
                     Path::new("/mtos/pkgs").join(format!(
-                        "{}+{}{}{}+{}",
+                        "{}+{}.{}.{}+{}",
                         self.name, self.version.0, self.version.1, self.version.2, self.sha256
                     )),
                 )
                 .args(&mut i.cmd[1..arge])
                 .output()?;
         }
+        std::env::set_var("PATH", format!(
+            "/mtos/pkgs/{}+{}.{}.{}+{}",
+            self.name, self.version.0, self.version.1, self.version.2, self.sha256
+            
+        ));
         Ok(())
     }
 
     fn remove(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+        std::fs::remove_dir_all(format!("/mtos/bin/"))?;
         Ok(())
     }
 
