@@ -4,8 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-clap = { version = "4.5.18", features = ["derive"], workspace = true}
-filedb-ng = "0.1.1"
-serde = { version = "1.0.210", features = ["derive"], workspace = true}
-serde_yaml = {version = "0.9.34", workspace = true}
+clap = {  workspace = true}
+serde = { workspace = true}
+serde_yaml = {workspace = true}
 package_manager = {path = "../../package_manager", version = "*", workspace = true}

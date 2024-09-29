@@ -1,3 +1,4 @@
+use compress_tools::Ownership;
 // use compress_tools::Ownership;
 use fetch_data::hash_download;
 use serde::{Deserialize, Serialize};
@@ -5,12 +6,12 @@ use serde_yaml::from_str;
 use std::{
     env::temp_dir,
     error::Error,
-    fs::read_to_string,
+    fs::{read_dir, read_to_string, File},
     path::Path,
     process::{exit, Command},
 };
 use traits::{Building, DependencyResolution, Filling};
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize, Default, Clone, Debug)]
 struct Deps {
     name: String,
     category: String,
@@ -47,7 +48,20 @@ pub struct Builder {
     build: Build,
     install: Install,
 }
-
+macro_rules! lookup {
+    ($pkg:expr) => {
+        for i in read_dir($pkg)? {
+            let p = i?;
+            if p.path().to_str().unwrap().to_string().as_str() == $pkg {
+                let cfg = std::fs::read_to_string($pkg)?;
+                let y: Self = serde_yaml::from_str(&cfg)?;
+                println!("Name: {}/{}", y.category, y.name);
+                println!("Version: {:#?}", y.version);
+                println!("Dependencies: {:#?}", y.dependencies);
+            }
+        }
+    };
+}
 impl Builder {
     pub fn write(self, path: &str) -> Result<(), Box<dyn Error>> {
         std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
@@ -79,18 +93,17 @@ impl DependencyResolution for Builder {
 }
 impl Building for Builder {
     /// Mainly dependency resolution and downloads
-    fn prep(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    fn prep(&self) -> Result<(), Box<dyn std::error::Error>> {
         if self.dependencies.is_empty() {
             println!("Nothing to resolve");
         } else {
-            for i in self.dependencies.iter() {
-                self.clone()
-                    .fill(format!("{}/{}.yml", i.category, i.name).as_str())?;
+            for i in &self.dependencies {
+                self.clone().fill(format!("{}/{}.yml", i.category, i.name).as_str())?;
                 self.clone().resolve()?;
             }
         }
         println!("Making package {}", self.name);
-        for i in self.dl.clone().iter() {
+        for i in &self.dl.clone() {
             println!("Downloading {}.{} to {}", i.name, i.ft, i.src);
             let path = Path::new(temp_dir().clone().as_path()).join(format!("{}{}", i.name, i.ft));
             if hash_download(i.clone().src, &path)? != i.sha256 {
@@ -98,11 +111,12 @@ impl Building for Builder {
                 eprintln!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
                 exit(1);
             } else {
-                // compress_tools::uncompress_archive(&path, "src", Ownership::Preserve)?;
+                compress_tools::uncompress_archive(File::open(path)?, Path::new("src"), Ownership::Preserve)?;
+                std::env::set_current_dir("src")?;
             }
         }
         println!("Running pre-build steps");
-        (&self.prepare.0).into_iter().for_each(|i| {
+        self.prepare.0.iter().for_each(|i| {
             let arge = i.cmd.len();
             println!("\tRunning step {}", i.name);
             match Command::new(i.cmd[0].clone())
@@ -111,7 +125,7 @@ impl Building for Builder {
             {
                 Ok(ok) => println!("{:#?}", ok.stdout.iter()),
                 Err(e) => {
-                    eprintln!("{:#?}", e);
+                    eprintln!("{e:#?}");
                     exit(1)
                 }
             }
@@ -138,13 +152,16 @@ impl Building for Builder {
         for i in &mut self.install.0 {
             let arge = i.cmd.iter().len();
             println!("\tRunning step {}", i.name);
-            Command::new(i.cmd[0].clone())
-                .env(
-                    "INSTDIR",
-                    Path::new("/mtos/pkgs").join(format!(
+            let key = "INSTDIR";
+            let val = Path::new("/mtos/pkgs").join(format!(
                         "{}+{}.{}.{}+{}",
                         self.name, self.version.0, self.version.1, self.version.2, self.sha256
-                    )),
+                    ));
+            std::fs::DirBuilder::new().recursive(true).create(&val)?;
+            Command::new(i.cmd[0].clone())
+                .env(
+                    key,
+                    val,
                 )
                 .args(&mut i.cmd[1..arge])
                 .output()?;
@@ -158,11 +175,12 @@ impl Building for Builder {
     }
 
     fn remove(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
-        std::fs::remove_dir_all(format!("/mtos/bin/"))?;
+        std::fs::remove_dir_all("/mtos/bin/")?;
         Ok(())
     }
 
     fn query(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
+        lookup!(pkg);
         Ok(())
     }
 }

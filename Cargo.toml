@@ -9,13 +9,14 @@ fetch-data = "0.2.0"
 serde = { version = "1.0.210", features = ["derive"] }
 serde_yaml = "0.9.34"
 sha256 = "1.5.0"
-#compress-tools = "0.15.1"
+compress-tools = "0.15.1"
 traits = {path = "libs/traits", version = "*"}
-claui = "0.4.0"
 package_manager = {path = "package_manager", version = "*"}
+claui = {version = "0.4.0", optional = false}
+
 [workspace]
 members = ["package_manager", "libs/colors", "libs/traits", "helpers/shapkg", "helpers/mkrepo"]
-
+resolver = "2"
 [[bin]]
 name = "pm"
 path = "package_manager/src/main.rs"
@@ -31,6 +32,10 @@ serde_yaml.workspace = true
 sha256.workspace = true
 traits.workspace = true
 fetch-data.workspace = true
-#compress-tools.workspace = true
+compress-tools.workspace = true
 package_manager.workspace = true
-claui.workspace = true
+claui = {version = "0.4.0", optional = false}
+[features]
+default = ["nogui"]
+gui = []
+nogui = []

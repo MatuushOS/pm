@@ -8,7 +8,7 @@ pub trait Filling {
 }
 
 pub trait Building: DependencyResolution + Filling {
-    fn prep(&mut self) -> Result<(), Box<dyn Error>>;
+    fn prep(&self) -> Result<(), Box<dyn Error>>;
     fn build(&mut self) -> Result<(), Box<dyn Error>>;
     fn install(&mut self) -> Result<(), Box<dyn Error>>;
     fn remove(&self, pkg: &str) -> Result<(), Box<dyn Error>>;
