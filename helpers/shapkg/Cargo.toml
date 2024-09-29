@@ -1,0 +1,10 @@
+[package]
+name = "shapkg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fetch-data = {version = "0.2.0", workspace = true}
+package_manager = {path = "../../package_manager", version = "*", workspace = true}
+serde_yaml = {version = "0.9.34", workspace = true}
+sha256 = {version = "1.5.0", workspace = true}
