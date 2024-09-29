@@ -98,7 +98,8 @@ impl Building for Builder {
             println!("Nothing to resolve");
         } else {
             for i in &self.dependencies {
-                self.clone().fill(format!("{}/{}.yml", i.category, i.name).as_str())?;
+                self.clone()
+                    .fill(format!("{}/{}.yml", i.category, i.name).as_str())?;
                 self.clone().resolve()?;
             }
         }
@@ -111,7 +112,11 @@ impl Building for Builder {
                 eprintln!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
                 exit(1);
             } else {
-                compress_tools::uncompress_archive(File::open(path)?, Path::new("src"), Ownership::Preserve)?;
+                compress_tools::uncompress_archive(
+                    File::open(path)?,
+                    Path::new("src"),
+                    Ownership::Preserve,
+                )?;
                 std::env::set_current_dir("src")?;
             }
         }
@@ -154,28 +159,30 @@ impl Building for Builder {
             println!("\tRunning step {}", i.name);
             let key = "INSTDIR";
             let val = Path::new("/mtos/pkgs").join(format!(
-                        "{}+{}.{}.{}+{}",
-                        self.name, self.version.0, self.version.1, self.version.2, self.sha256
-                    ));
+                "{}+{}.{}.{}+{}",
+                self.name, self.version.0, self.version.1, self.version.2, self.sha256
+            ));
             std::fs::DirBuilder::new().recursive(true).create(&val)?;
             Command::new(i.cmd[0].clone())
-                .env(
-                    key,
-                    val,
-                )
+                .env(key, val)
                 .args(&mut i.cmd[1..arge])
                 .output()?;
         }
-        std::env::set_var("PATH", format!(
-            "/mtos/pkgs/{}+{}.{}.{}+{}",
-            self.name, self.version.0, self.version.1, self.version.2, self.sha256
-            
-        ));
+        std::env::set_var(
+            "PATH",
+            format!(
+                "/mtos/pkgs/{}+{}.{}.{}+{}",
+                self.name, self.version.0, self.version.1, self.version.2, self.sha256
+            ),
+        );
         Ok(())
     }
 
     fn remove(&self, pkg: &str) -> Result<(), Box<dyn std::error::Error>> {
-        std::fs::remove_dir_all("/mtos/bin/")?;
+        std::fs::remove_dir_all(format!(
+            "/mtos/pkgs/{pkg}+{}.{}.{}+{}",
+            self.version.0, self.version.1, self.version.2, self.sha256
+        ))?;
         Ok(())
     }
 
