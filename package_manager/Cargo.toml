@@ -12,6 +12,7 @@ traits = { version = "0.1.0", workspace = true}
 fetch-data = {workspace = true}
 claui = {workspace = true, optional = true}
 compress-tools = {workspace = true}
+log = {workspace = true}
 [features]
 default = ["nogui"]
 gui = ["dep:claui"]

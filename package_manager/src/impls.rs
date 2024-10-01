@@ -1,5 +1,4 @@
 use compress_tools::Ownership;
-// use compress_tools::Ownership;
 use fetch_data::hash_download;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
@@ -11,32 +10,32 @@ use std::{
     process::{exit, Command},
 };
 use traits::{Building, DependencyResolution, Filling};
-#[derive(Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(Serialize, Deserialize,  Clone, Debug)]
 struct Deps {
     name: String,
     category: String,
     version: Vec<i32>,
     sha256: String,
 }
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize,  Clone)]
 struct Step {
     name: String,
     cmd: Vec<String>,
 }
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize,  Clone)]
 struct Prepare(Vec<Step>);
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize,  Clone)]
 struct Build(Vec<Step>);
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize,  Clone)]
 struct Install(Vec<Step>);
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize,  Clone)]
 pub struct Fetch {
     name: String,
     ft: String,
     pub src: String,
     pub sha256: String,
 }
-#[derive(Serialize, Deserialize, Default, Clone)]
+#[derive(Serialize, Deserialize,  Clone)]
 pub struct Builder {
     name: String,
     pub category: String,
@@ -68,10 +67,15 @@ impl Builder {
         Ok(())
     }
 }
+impl Default for Builder {
+    fn default() -> Self {
+        Self { name: "".to_string(), category: "".to_string(), version: (0, 0, 0), sha256: "".to_string(), dependencies: vec![Deps { name: "".to_string(), category: "".to_string(), version: vec![0], sha256: "".to_string() }], dl: vec![Fetch { name: "".to_string(), ft: "".to_string(), src: "".to_string(), sha256: "".to_string() }], prepare: Prepare(vec![Step { name: "".to_string(), cmd: vec!["".to_string()] }]), build: Build(vec![Step { name: "".to_string(), cmd: vec!["".to_string()] }]), install: Install(vec![Step { name: "".to_string(), cmd: vec!["".to_string()] }]) }
+    }
+}
 impl Filling for Builder {
     fn fill(&mut self, f: &str) -> Result<(), Box<dyn Error>> {
-        let f = read_to_string(f)?;
-        let cfg: Self = from_str(&f)?;
+        let f = read_to_string(f).unwrap();
+        let cfg: Self = from_str(&f).unwrap();
         self.name = cfg.name;
         self.category = cfg.category;
         self.version = cfg.version;
@@ -94,6 +98,7 @@ impl DependencyResolution for Builder {
 impl Building for Builder {
     /// Mainly dependency resolution and downloads
     fn prep(&self) -> Result<(), Box<dyn std::error::Error>> {
+        log::info!(target: "prepare", "Making package {}", self.name);
         if self.dependencies.is_empty() {
             println!("Nothing to resolve");
         } else {

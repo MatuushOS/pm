@@ -11,6 +11,7 @@ serde_yaml = "0.9.34"
 sha256 = "1.5.0"
 compress-tools = "0.15.1"
 traits = {path = "libs/traits", version = "*"}
+log = "*"
 package_manager = {path = "package_manager", version = "*"}
 claui = {version = "0.4.0", optional = false}
 
@@ -34,8 +35,9 @@ traits.workspace = true
 fetch-data.workspace = true
 compress-tools.workspace = true
 package_manager.workspace = true
-claui = {version = "0.4.0", optional = false}
+claui = {version = "0.4.0", optional = true}
+log.workspace = true
 [features]
 default = ["nogui"]
-gui = []
+gui = ["dep:claui"]
 nogui = []

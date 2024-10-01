@@ -15,13 +15,13 @@ pub mod macros;
 struct Cli {
     #[arg(short, long)]
     /// Installs a package
-    install: Option<Vec<String>>,
+    install: Option<String>,
     #[arg(short, long)]
     /// Removes a package
-    remove: Option<Vec<String>>,
+    remove: Option<String>,
     #[arg(short, long)]
     /// Queries a package
-    query: Option<Vec<String>>,
+    query: Option<String>,
     #[arg(short, long)]
     /// Creates a new configuration file
     create: Option<String>,
@@ -64,26 +64,19 @@ fn main() {
     }).unwrap();
     #[cfg(feature = "nogui")]
     if arge.remove.clone().is_some() {
-        for p in arge.remove.unwrap() {
-            let f = std::fs::read_to_string(p).unwrap();
+            let f = std::fs::read_to_string(arge.remove.as_ref().unwrap()).unwrap();
             let mut b = Builder::default();
             b.fill(f.as_str()).unwrap();
-            b.remove(&f).unwrap();
-        }
+            b.remove(&arge.remove.unwrap()).unwrap();
     } else if arge.install.is_some() {
-        for i in arge.install.unwrap() {
-            let f = std::fs::read_to_string(i).unwrap();
             let mut b = Builder::default();
-            b.fill(f.as_str()).unwrap();
+            b.fill(arge.install.unwrap().as_str()).unwrap();
             b.resolve().unwrap();
-        }
     } else if arge.query.is_some() {
-        for q in arge.query.unwrap() {
-            let f = std::fs::read_to_string(q).unwrap();
+            let f = std::fs::read_to_string(arge.query.unwrap()).unwrap();
             let mut b = Builder::default();
             b.fill(f.as_str()).unwrap();
-            b.remove(&f).unwrap();
-        }
+            b.query(&f).unwrap();
     } else if arge.create.is_some() {
         Builder::default()
             .write(arge.create.unwrap().as_str())
