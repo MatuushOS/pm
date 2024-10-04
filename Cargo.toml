@@ -14,6 +14,7 @@ log = "*"
 package_manager = {path = "package_manager", version = "*"}
 claui = {version = "0.4.0", optional = false}
 colog = "*"
+unarchive = {version = "*", path = "libs/unarchive"}
 [workspace]
 members = ["package_manager", "libs/colors", "libs/traits", "libs/unarchive", "helpers/shapkg", "helpers/mkrepo"]
 resolver = "2"
@@ -36,6 +37,7 @@ package_manager.workspace = true
 claui = {version = "0.4.0", optional = true}
 log.workspace = true
 colog.workspace = true
+unarchive.workspace = true
 [features]
 default = ["nogui"]
 gui = ["dep:claui"]

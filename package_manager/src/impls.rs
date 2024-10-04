@@ -1,4 +1,3 @@
-use compress_tools::Ownership;
 use fetch_data::hash_download;
 use log::{error, info, trace};
 use serde::{Deserialize, Serialize};
@@ -133,11 +132,7 @@ impl Building for Builder {
                 error!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
                 exit(1);
             } else {
-                compress_tools::uncompress_archive(
-                    File::open(path)?,
-                    Path::new("src"),
-                    Ownership::Preserve,
-                )?;
+                unarchive::extract(path);
                 std::env::set_current_dir("src")?;
             }
         }
