@@ -1,7 +1,6 @@
 name: Build the thing
 on: 
-    schedule:
-        - cron: "@weekly"
+    push:
 
 jobs:
     build:
