@@ -1,13 +1,16 @@
 on: push
 name: Clippy check
+permissions:
+    checks: write
 jobs:
-  clippy_check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: "--fix --bin --all-features --workspace"
-              
+    clippy:
+        name: Clippy
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  components: clippy
+            - uses: auguwu/clippy-action@1.4.0
+              with:
+                  token: ${{secrets.GITHUB_TOKEN}}
