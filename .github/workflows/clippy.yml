@@ -11,6 +11,7 @@ jobs:
             - uses: dtolnay/rust-toolchain@stable
               with:
                   components: clippy
+                  targets: x86_64-unknown-linux-musl
             - uses: auguwu/clippy-action@1.4.0
               with:
                   token: ${{secrets.GITHUB_TOKEN}}
