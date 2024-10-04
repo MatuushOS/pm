@@ -1,5 +1,4 @@
-CONTAINER_CMD := podman
-COPY := {pm,mkrepo,shapkg}
+CONTAINER_CMD := "podman"
 build:
     cargo build --workspace --release
     ${CONTAINER_CMD} build .
