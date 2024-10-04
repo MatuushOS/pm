@@ -7,7 +7,11 @@ jobs:
     build:
         name: Build
         runs-on: ubuntu-latest
+        container:
+            image: alpine:latest
         steps:
+            - name: Prepare the environment
+              run: apk update; apk add alpine-sdk clang cmake pkgconf
             - uses: actions/checkout@v3
             - uses: dtolnay/rust-toolchain@stable
               with:
