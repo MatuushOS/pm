@@ -10,7 +10,7 @@ jobs:
             image: alpine:latest
         steps:
             - name: Prepare the environment
-              run: apk update; apk add alpine-sdk clang cmake pkgconf bash
+              run: apk update; apk add alpine-sdk clang cmake pkgconf bash curl 
             - uses: actions/checkout@v3
             - uses: dtolnay/rust-toolchain@stable
               with:
