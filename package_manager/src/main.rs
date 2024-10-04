@@ -1,15 +1,14 @@
 #![warn(clippy::all, clippy::pedantic, clippy::perf)]
 #![cfg(target_os = "linux")]
 
-use clap::Parser;
 #[cfg(feature = "gui")]
 use clap::CommandFactory;
+use clap::Parser;
 #[cfg(any(feature = "gui", feature = "nogui"))]
 use impls::Builder;
 #[cfg(any(feature = "gui", feature = "nogui"))]
 use traits::{Building, DependencyResolution, Filling};
 pub mod impls;
-pub mod macros;
 #[derive(Parser)]
 #[clap(name = "pm", author = "Matus Mastena <Shadiness9530@proton.me>", about = "Package manager", long_about = None)]
 struct Cli {
@@ -28,6 +27,7 @@ struct Cli {
 }
 
 fn main() {
+    colog::init();
     #[cfg(feature = "nogui")]
     let arge = Cli::parse();
     #[cfg(feature = "gui")]
@@ -41,8 +41,7 @@ fn main() {
                 b.fill(f.as_str()).unwrap();
                 b.remove(&f).unwrap();
             }
-        }
-        else if matches.get_flag("install") {
+        } else if matches.get_flag("install") {
             for i in arge.install.clone().unwrap().iter() {
                 let f = std::fs::read_to_string(i).unwrap();
                 let mut b = Builder::default();
@@ -61,22 +60,21 @@ fn main() {
                 .write(arge.create.clone().unwrap().as_str())
                 .unwrap();
         }
-    }).unwrap();
+    })
+    .unwrap();
     #[cfg(feature = "nogui")]
     if arge.remove.clone().is_some() {
-            let f = std::fs::read_to_string(arge.remove.as_ref().unwrap()).unwrap();
-            let mut b = Builder::default();
-            b.fill(f.as_str()).unwrap();
-            b.remove(&arge.remove.unwrap()).unwrap();
+        let mut b = Builder::default();
+        b.fill(arge.remove.as_ref().unwrap().into()).unwrap();
+        b.remove().unwrap();
     } else if arge.install.is_some() {
-            let mut b = Builder::default();
-            b.fill(arge.install.unwrap().as_str()).unwrap();
-            b.resolve().unwrap();
+        let mut b = Builder::default();
+        b.fill(arge.install.unwrap().as_str().into()).unwrap();
+        b.resolve().unwrap();
     } else if arge.query.is_some() {
-            let f = std::fs::read_to_string(arge.query.unwrap()).unwrap();
-            let mut b = Builder::default();
-            b.fill(f.as_str()).unwrap();
-            b.query(&f).unwrap();
+        let mut b = Builder::default();
+        b.fill(arge.query.unwrap().as_str().into()).unwrap();
+        b.query().unwrap();
     } else if arge.create.is_some() {
         Builder::default()
             .write(arge.create.unwrap().as_str())

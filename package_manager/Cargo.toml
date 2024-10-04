@@ -13,6 +13,7 @@ fetch-data = {workspace = true}
 claui = {workspace = true, optional = true}
 compress-tools = {workspace = true}
 log = {workspace = true}
+colog = {workspace = true}
 [features]
 default = ["nogui"]
 gui = ["dep:claui"]
