@@ -1,5 +1,4 @@
-name: Build the thing
-on: 
+on:
     push:
 
 jobs:
@@ -16,6 +15,19 @@ jobs:
               with:
                   targets: x86_64-unknown-linux-musl
             - name: Compile and release
-              uses: rust-build/rust-build.action@v1.4.5
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: cargo build --release --workspace
+            - uses: actions/upload-artifact@v4
+              with:
+                  name: pm
+                  path: |
+                      target/x86_64-unknown-linux-musl/release/pm
+                      target/x86_64-unknwon-linux-musl/release/mkrepo
+                      target/x86_64-unknown-linux-musl/release/shapkg
+            - uses: SierraSoftworks/gh-releases@v1.0.7
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  overwrite: "true"
+                  files: |
+                      target/x86_64-unknown-linux-musl/release/pm
+                      target/x86_64-unknwon-linux-musl/release/mkrepo
+                      target/x86_64-unknown-linux-musl/release/shapkg
