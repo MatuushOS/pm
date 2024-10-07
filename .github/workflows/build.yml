@@ -1,5 +1,8 @@
 on:
     push:
+    workflow_dispatch:
+    schedule:
+        - cron: "20 20 20 20 *"
 
 jobs:
     build:
@@ -16,8 +19,12 @@ jobs:
                   targets: x86_64-unknown-linux-musl
             - name: Compile and release
               run: cargo build --release --workspace
-            - name: Create tag for later use
-              run: git tag -d "nightly-$(date +%YY%MM%DD%HH%MM%SS)"
+            - uses: rickstaa/action-create-tag@v1
+              id: "tag_create"
+              with:
+                tag: "nightly"
+                tag_exists_error: false
+                message: "Nightly release of MatuushOS"
             - uses: actions/upload-artifact@v4
               with:
                   name: pm
