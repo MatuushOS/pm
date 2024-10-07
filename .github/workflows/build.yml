@@ -1,8 +1,6 @@
 on:
     push:
     workflow_dispatch:
-    schedule:
-        - cron: "20 20 20 20 *"
 
 jobs:
     build:
