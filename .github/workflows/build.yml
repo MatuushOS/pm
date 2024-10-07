@@ -23,12 +23,4 @@ jobs:
                       target/x86_64-unknown-linux-musl/release/pm
                       target/x86_64-unknwon-linux-musl/release/mkrepo
                       target/x86_64-unknown-linux-musl/release/shapkg
-            - uses: SierraSoftworks/gh-releases@v1.0.7
-              with:
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  overwrite: "true"
-                  release_tag: git tag -d $(date +%YY%MM%HH%SS -u)
-                  files: |
-                      target/x86_64-unknown-linux-musl/release/pm
-                      target/x86_64-unknwon-linux-musl/release/mkrepo
-                      target/x86_64-unknown-linux-musl/release/shapkg
+            - uses: softprops/action-gh-release@v2
