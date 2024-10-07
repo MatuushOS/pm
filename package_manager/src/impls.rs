@@ -2,10 +2,10 @@ use fetch_data::hash_download;
 use log::{error, info, trace};
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
+use std::fs::read_to_string;
 use std::{
     env::temp_dir,
     error::Error,
-    fs::{read_dir, read_to_string, File},
     path::{Path, PathBuf},
     process::{exit, Command},
 };
@@ -57,33 +57,33 @@ impl Builder {
 impl Default for Builder {
     fn default() -> Self {
         Self {
-            name: "".to_string(),
-            category: "".to_string(),
+            name: String::new(),
+            category: String::new(),
             version: (0, 0, 0),
-            sha256: "".to_string(),
+            sha256: String::new(),
             dependencies: vec![Deps {
-                name: "".to_string(),
-                category: "".to_string(),
+                name: String::new(),
+                category: String::new(),
                 version: vec![0],
-                sha256: "".to_string(),
+                sha256: String::new(),
             }],
             dl: vec![Fetch {
-                name: "".to_string(),
-                ft: "".to_string(),
-                src: "".to_string(),
-                sha256: "".to_string(),
+                name: String::new(),
+                ft: String::new(),
+                src: String::new(),
+                sha256: String::new(),
             }],
             prepare: Prepare(vec![Step {
-                name: "".to_string(),
-                cmd: vec!["".to_string()],
+                name: String::new(),
+                cmd: vec![String::new()],
             }]),
             build: Build(vec![Step {
-                name: "".to_string(),
-                cmd: vec!["".to_string()],
+                name: String::new(),
+                cmd: vec![String::new()],
             }]),
             install: Install(vec![Step {
-                name: "".to_string(),
-                cmd: vec!["".to_string()],
+                name: String::new(),
+                cmd: vec![String::new()],
             }]),
         }
     }
