@@ -27,6 +27,7 @@ jobs:
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   overwrite: "true"
+                  release_tag: git tag -d $(date +%YY%MM%HH%SS -u)
                   files: |
                       target/x86_64-unknown-linux-musl/release/pm
                       target/x86_64-unknwon-linux-musl/release/mkrepo
