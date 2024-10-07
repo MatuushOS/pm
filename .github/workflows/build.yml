@@ -16,6 +16,8 @@ jobs:
                   targets: x86_64-unknown-linux-musl
             - name: Compile and release
               run: cargo build --release --workspace
+            - name: Create tag for later use
+              run: git tag -d "nightly-$(date +%YY%MM%DD%HH%MM%SS)"
             - uses: actions/upload-artifact@v4
               with:
                   name: pm
