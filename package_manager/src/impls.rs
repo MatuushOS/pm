@@ -165,12 +165,10 @@ impl Building for Builder {
                     }
                 }
             });
+        } else if cfg!(target_os = "windows") {
+            info!("We are on Windows, we don't need to run prepare tasks");
         } else {
-            if cfg!(target_os = "windows") {
-                info!("We are on Windows, we don't need to run prepare tasks");
-            } else {
-                info!("Everything okay, prepare step not present")
-            }
+            info!("Everything okay, prepare step not present");
         }
         Ok(())
     }
@@ -184,12 +182,10 @@ impl Building for Builder {
                     .args(&mut i.cmd[1..arge])
                     .output()?;
             }
+        } else if cfg!(target_os = "windows") {
+            info!("We are on Windows, we don't need to run build tasks");
         } else {
-            if cfg!(target_os = "windows") {
-                info!("We are on Windows, we don't need to run build tasks");
-            } else {
-                info!("Everything okay, build step not present")
-            }
+            info!("Everything okay, build step not present");
         }
         Ok(())
     }

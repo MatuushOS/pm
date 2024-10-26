@@ -9,7 +9,7 @@ mod tests {
         assert!(Command::new(Path::new(
             &Path::new("target").join("debug").join("pm")
         ))
-        .args(["-i", "hello-windows.yml"])
+        .args(["-i", "tests/hello-windows.yml"])
         .status()
         .unwrap()
         .success())
@@ -17,6 +17,12 @@ mod tests {
     #[test]
     #[cfg(any(target_os = "macos", target_os = "linux"))]
     fn check_install_macos_unix_linux() {
-        
+        assert!(Command::new(Path::new(
+            &Path::new("target").join("debug").join("pm")
+        ))
+            .args(["-i", "tests/hello-unix.yml"])
+            .status()
+            .unwrap()
+            .success())
     }
 }

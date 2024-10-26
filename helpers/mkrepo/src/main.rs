@@ -17,15 +17,12 @@ fn main() -> io::Result<()> {
     let arge: String = args().collect();
     name.name = arge;
     if !Path::new("/mtos").exists() {
-        DirBuilder::new()
-            .recursive(true)
-            .create(&name.name)
-            .unwrap();
+        DirBuilder::new().recursive(true).create(&name.name)?;
     }
-    for entry in read_dir(".")? {
-        let entry = entry?;
+    for ent in read_dir(".")? {
+        let entry = ent?;
         let path = entry.path();
-        match Path::new(&path).extension().unwrap() == "yml" {
+        match entry.file_type()? == "yml" {
             true => {
                 rename(&path, Path::new("/mtos").join(&path))?;
                 name.pkgs.push(path.to_str().unwrap().to_string());
@@ -33,6 +30,6 @@ fn main() -> io::Result<()> {
             false => break,
         };
     }
-    write("/mtos/config.yml", serde_yaml::to_string(&name).unwrap()).unwrap();
+    write("/mtos/config.yml", serde_yaml::to_string(&name).unwrap())?;
     Ok(())
 }
