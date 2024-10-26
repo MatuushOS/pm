@@ -1,12 +1,12 @@
+use clap::Parser;
+use log::{error, info, warn};
+use serde::{Deserialize, Serialize};
+use std::process::exit;
 use std::{
     fs::{read_dir, rename, write, DirBuilder},
     io,
     path::Path,
 };
-use std::process::exit;
-use clap::Parser;
-use log::{error, info, warn};
-use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Default)]
 struct RepoConfig {
     name: String,

@@ -81,7 +81,7 @@ impl Default for Builder {
             category: String::new(),
             version: (0, 0, 0),
             sha256: String::new(),
-            dependencies: Option::from(vec![Deps {
+            dependencies: Some(vec![Deps {
                 name: String::new(),
                 category: String::new(),
                 version: vec![0],
@@ -93,11 +93,11 @@ impl Default for Builder {
                 src: String::new(),
                 sha256: String::new(),
             }],
-            prepare: Option::from(Prepare(vec![Step {
+            prepare: Some(Prepare(vec![Step {
                 name: String::new(),
                 cmd: vec![String::new()],
             }])),
-            build: Option::from(Build(vec![Step {
+            build: Some(Build(vec![Step {
                 name: String::new(),
                 cmd: vec![String::new()],
             }])),
