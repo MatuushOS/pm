@@ -1,0 +1,17 @@
+name: 'Firefox'
+category: 'browsers'
+version:
+  - 128
+  - 0
+  - 0
+sha256: ''
+dl:
+  - name: 'ff'
+    ft: 'msi'
+    src: 'https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=en-US'
+    sha256: 'edc68829ddb93e1d92a8f252c02c36e869c8c71db9dd465b337d9e06c795d675'
+install:
+- name: "Run Firefox's setup script"
+  cmd:
+  - '.\ff.msi'
+  - '/S'

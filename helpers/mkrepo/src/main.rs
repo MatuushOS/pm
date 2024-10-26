@@ -22,19 +22,15 @@ fn main() -> io::Result<()> {
             .create(&name.name)
             .unwrap();
     }
-    for i in read_dir(".").unwrap() {
-        let p = i.unwrap();
-        match Path::new(p.path().as_path()).extension().unwrap() {
-            p => {
-                match p == "yml" {
-                    true => {
-                        rename(p, Path::new("/mtos").join(p))?;
-                        name.pkgs.push(p.to_str().unwrap().to_string());
-                    }
-                    false => break,
-                }
+    for entry in read_dir(".")? {
+        let entry = entry?;
+        let path = entry.path();
+        match Path::new(&path).extension().unwrap() == "yml" {
+            true => {
+                rename(&path, Path::new("/mtos").join(&path))?;
+                name.pkgs.push(path.to_str().unwrap().to_string());
             }
-            _ => break,
+            false => break,
         };
     }
     write("/mtos/config.yml", serde_yaml::to_string(&name).unwrap()).unwrap();

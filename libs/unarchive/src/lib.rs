@@ -4,7 +4,12 @@ use log::{error, trace};
 
 pub fn extract(f: PathBuf) {
     match f.as_path().extension() {
-        Some(ext) => match ext.to_ascii_lowercase().into_string().unwrap().as_str() {
+        Some(ext) => match ext
+            .to_ascii_lowercase()
+            .into_string()
+            .unwrap()
+            .as_str()
+        {
             "tar.gz" => {
                 match Command::new("tar")
                     .args(["-xvf", f.as_path().to_str().unwrap(), "-C", "src/"])

@@ -1,5 +1,6 @@
 use fetch_data::hash_download;
 use log::{error, info, trace};
+use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
 use std::fs::read_to_string;
@@ -13,7 +14,7 @@ use traits::{Building, DependencyResolution, Filling};
 #[derive(Serialize, Deserialize, Clone, Debug)]
 struct Deps {
     name: String,
-    category: String,
+    pub category: String,
     version: Vec<i32>,
     sha256: String,
 }
@@ -30,8 +31,8 @@ struct Build(Vec<Step>);
 struct Install(Vec<Step>);
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Fetch {
-    name: String,
-    ft: String,
+    pub name: String,
+    pub ft: String,
     pub src: String,
     pub sha256: String,
 }
@@ -41,15 +42,21 @@ pub struct Builder {
     pub category: String,
     version: (i32, i32, i32),
     sha256: String,
-    dependencies: Vec<Deps>,
+    dependencies: Option<Vec<Deps>>,
     pub dl: Vec<Fetch>,
+    #[cfg(target_os = "windows")]
+    prepare: Option<Prepare>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     prepare: Prepare,
+    #[cfg(target_os = "windows")]
+    build: Option<Build>,
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
     build: Build,
     install: Install,
 }
 
 impl Builder {
-    pub fn write(self, path: &str) -> Result<(), Box<dyn Error>> {
+    pub(crate) fn write(self, path: &str) -> Result<(), Box<dyn Error>> {
         std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
         Ok(())
     }
@@ -61,26 +68,26 @@ impl Default for Builder {
             category: String::new(),
             version: (0, 0, 0),
             sha256: String::new(),
-            dependencies: vec![Deps {
+            dependencies: Option::from(vec![Deps {
                 name: String::new(),
                 category: String::new(),
                 version: vec![0],
                 sha256: String::new(),
-            }],
+            }]),
             dl: vec![Fetch {
                 name: String::new(),
                 ft: String::new(),
                 src: String::new(),
                 sha256: String::new(),
             }],
-            prepare: Prepare(vec![Step {
+            prepare: Option::from(Prepare(vec![Step {
                 name: String::new(),
                 cmd: vec![String::new()],
-            }]),
-            build: Build(vec![Step {
+            }])),
+            build: Option::from(Build(vec![Step {
                 name: String::new(),
                 cmd: vec![String::new()],
-            }]),
+            }])),
             install: Install(vec![Step {
                 name: String::new(),
                 cmd: vec![String::new()],
@@ -113,70 +120,111 @@ impl DependencyResolution for Builder {
 }
 impl Building for Builder {
     /// Mainly dependency resolution and downloads
-    fn prep(&self) -> Result<(), Box<dyn std::error::Error>> {
+    fn prep(&self) -> Result<(), Box<dyn Error>> {
         trace!(target: "prepare", "Making package {}", self.name);
-        if self.dependencies.is_empty() {
+        if self.dependencies.is_none() {
             info!("Nothing to resolve");
         } else {
-            for i in &self.dependencies {
-                self.clone()
-                    .fill(Path::new(&i.category).join(&i.name).with_extension("yml"))?;
+            for i in &self.dependencies.clone().unwrap() {
+                self.clone().fill(
+                    Path::new(&i.category).join(&i.name).with_extension("yml"),
+                )?;
                 self.clone().resolve()?;
             }
         }
         for i in &self.dl.clone() {
-            info!("Downloading {}.{} to {}", i.name, i.ft, i.src);
-            let path = Path::new(temp_dir().clone().as_path()).join(format!("{}{}", i.name, i.ft));
+            info!("Downloading {}.{} from {}", i.name, i.ft, i.src);
+            let path = Path::new(temp_dir().clone().as_path())
+                .join(format!("{}{}", i.name, i.ft));
             if hash_download(i.clone().src, &path)? != i.sha256 {
                 std::fs::remove_file(path)?;
                 error!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
                 exit(1);
-            } else {
+            } else if path.extension()
+                == Some(Regex::new(r".tar.*").unwrap().as_str().as_ref())
+            {
                 unarchive::extract(path);
                 std::env::set_current_dir("src")?;
+            } else {
+                Command::new(format!("./{}", path.to_str().unwrap()));
             }
         }
         println!("Running pre-build steps");
-        self.prepare.0.iter().for_each(|i| {
-            let arge = i.cmd.len();
-            println!("\tRunning step {}", i.name);
-            match Command::new(i.cmd[0].clone())
-                .args(&i.cmd[1..arge])
-                .output()
-            {
-                Ok(ok) => println!("{:#?}", ok.stdout.iter()),
-                Err(e) => {
-                    eprintln!("{e:#?}");
-                    exit(1)
+        if let Some(prep) = self.prepare.clone() {
+            prep.clone().0.iter().for_each(|i| {
+                let arge = i.cmd.len();
+                println!("\tRunning step {}", i.name);
+                match Command::new(i.cmd[0].clone())
+                    .args(&i.cmd[1..arge])
+                    .output()
+                {
+                    Ok(ok) => println!("{:#?}", ok.stdout.iter()),
+                    Err(e) => {
+                        eprintln!("{e:#?}");
+                        exit(1)
+                    }
                 }
+            });
+        } else {
+            if cfg!(target_os = "windows") {
+                info!("We are on Windows, we don't need to run prepare tasks");
+            } else {
+                info!("Everything okay, prepare step not present")
             }
-        });
-        Ok(())
-    }
-
-    fn build(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        for i in &mut self.build.0 {
-            let arge = i.cmd.iter().len();
-            trace!("\tRunning step {}", i.name);
-            Command::new(i.cmd[0].clone())
-                .args(&mut i.cmd[1..arge])
-                .output()?;
         }
         Ok(())
     }
 
-    fn install(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+    fn build(&mut self) -> Result<(), Box<dyn Error>> {
+        if let Some(b) = self.build.clone() {
+            for i in &mut b.clone().0 {
+                let arge = i.cmd.iter().len();
+                trace!("\tRunning step {}", i.name);
+                Command::new(i.cmd[0].clone())
+                    .args(&mut i.cmd[1..arge])
+                    .output()?;
+            }
+        } else {
+            if cfg!(target_os = "windows") {
+                info!("We are on Windows, we don't need to run build tasks");
+            } else {
+                info!("Everything okay, build step not present")
+            }
+        }
+        Ok(())
+    }
+
+    fn install(&mut self) -> Result<(), Box<dyn Error>> {
         std::fs::DirBuilder::new().recursive(true).create(format!(
             "/mtos/pkgs/{}+{}{}{}+{}",
-            self.name, self.version.0, self.version.1, self.version.2, self.sha256
+            self.name,
+            self.version.0,
+            self.version.1,
+            self.version.2,
+            self.sha256
         ))?;
         for i in &mut self.install.0 {
             let arge = i.cmd.iter().len();
             trace!(target: "install",  "\tRunning step {}", i.name);
+            std::env::set_var(
+                "PATH",
+                format!(
+                    "/mtos/pkgs/{}+{}.{}.{}+{}",
+                    self.name,
+                    self.version.0,
+                    self.version.1,
+                    self.version.2,
+                    self.sha256
+                ),
+            );
             let key = "INSTDIR";
             let val = Path::new("/mtos/pkgs").join(format!(
                 "{}+{}.{}.{}+{}",
-                self.name, self.version.0, self.version.1, self.version.2, self.sha256
+                self.name,
+                self.version.0,
+                self.version.1,
+                self.version.2,
+                self.sha256
             ));
             std::fs::DirBuilder::new().recursive(true).create(&val)?;
             Command::new(i.cmd[0].clone())
@@ -184,26 +232,23 @@ impl Building for Builder {
                 .args(&mut i.cmd[1..arge])
                 .output()?;
         }
-        std::env::set_var(
-            "PATH",
-            format!(
-                "/mtos/pkgs/{}+{}.{}.{}+{}",
-                self.name, self.version.0, self.version.1, self.version.2, self.sha256
-            ),
-        );
         info!(target: "install", "DONE!");
         Ok(())
     }
 
-    fn remove(&self) -> Result<(), Box<dyn std::error::Error>> {
+    fn remove(&self) -> Result<(), Box<dyn Error>> {
         std::fs::remove_dir_all(format!(
             "/mtos/pkgs/{}+{}.{}.{}+{}",
-            self.name, self.version.0, self.version.1, self.version.2, self.sha256
+            self.name,
+            self.version.0,
+            self.version.1,
+            self.version.2,
+            self.sha256
         ))?;
         Ok(())
     }
 
-    fn query(&self) -> Result<(), Box<dyn std::error::Error>> {
+    fn query(&self) -> Result<(), Box<dyn Error>> {
         info!("Name: {}/{}", self.category, self.name);
         info!("Version: {:#?}", self.version);
         info!("Dependencies: {:#?}", self.dependencies);

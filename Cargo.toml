@@ -13,6 +13,7 @@ traits = {path = "libs/traits", version = "*"}
 log = "*"
 package_manager = {path = "package_manager", version = "*"}
 claui = {version = "0.4.0", optional = false}
+regex = "1.11.1"
 colog = "*"
 unarchive = {version = "*", path = "libs/unarchive"}
 [workspace]
@@ -35,6 +36,7 @@ traits.workspace = true
 fetch-data.workspace = true
 package_manager.workspace = true
 claui = {version = "0.4.0", optional = true}
+regex.workspace = true
 log.workspace = true
 colog.workspace = true
 unarchive.workspace = true
