@@ -26,11 +26,11 @@ struct Step {
 macro_rules! step {
     ($var:expr) => {
             for i in &$var.0.clone() {
-                let arge = $var.cmd.len();
+                let arge = i.cmd.len();
                 println!("\tRunning step {}", i.name);
-                match Command::new($var.cmd[0].clone())
+                match Command::new(i.cmd[0].clone())
                     .args(&i.cmd[1..arge])
-                    .output()
+                    .spawn()
                 {
                     Ok(ok) => trace!("{:#?}", ok.stdout.iter()),
                     Err(e) => {
