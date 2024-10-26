@@ -8,3 +8,5 @@ clap = {  workspace = true}
 serde = { workspace = true}
 serde_yaml = {workspace = true}
 package_manager = {path = "../../package_manager", version = "*", workspace = true}
+colog = {workspace = true}
+log = {workspace = true}

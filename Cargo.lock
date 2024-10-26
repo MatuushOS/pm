@@ -2056,6 +2056,8 @@ name = "mkrepo"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "colog",
+ "log",
  "package_manager",
  "serde",
  "serde_yaml",
