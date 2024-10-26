@@ -1,18 +1,33 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::path::Path;
     use std::process::Command;
-
     #[test]
+    #[cfg(target_os = "windows")]
     fn try_hash() {
-        let a = assert!(Command::new(
-            Path::new("target")
-                .join("debug")
-                .join("shapkg")
-                .to_str()
+        let p = Path::new("target").join("debug").join("shapkg");
+        assert_eq!(
+            Command::new(p)
+                .arg("hello-windows.yml")
+                .output()
                 .unwrap()
-        ).args(["tests/hello-unix.yml"]));
-        a.status().unwrap().success();
+                .status
+                .success(),
+            true
+        )
+    }
+    #[test]
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    fn try_hash() {
+        let p = Path::new("target").join("debug").join("shapkg");
+        assert_eq!(
+            Command::new(p)
+                .arg("hello-windows.yml")
+                .output()
+                .unwrap()
+                .status
+                .success(),
+            true
+        )
     }
 }

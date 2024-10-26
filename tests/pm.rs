@@ -20,9 +20,9 @@ mod tests {
         assert!(Command::new(Path::new(
             &Path::new("target").join("debug").join("pm")
         ))
-            .args(["-i", "tests/hello-unix.yml"])
-            .status()
-            .unwrap()
-            .success())
+        .args(["-i", "tests/hello-unix.yml"])
+        .status()
+        .unwrap()
+        .success())
     }
 }

@@ -4,11 +4,11 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
 use std::{
-    fs::read_to_string,
     env::temp_dir,
     error::Error,
+    fs::read_to_string,
     path::{Path, PathBuf},
-    process::{exit, Command}
+    process::{exit, Command},
 };
 use traits::{Building, DependencyResolution, Filling};
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -56,6 +56,19 @@ pub struct Builder {
 }
 
 impl Builder {
+    ///
+    ///
+    /// # Arguments
+    ///
+    /// * `path`:
+    ///
+    /// returns: Result<(), Box<dyn Error, Global>>
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// Builder::default().write("")
+    /// ```
     pub(crate) fn write(self, path: &str) -> Result<(), Box<dyn Error>> {
         std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
         Ok(())
