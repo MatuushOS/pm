@@ -3,12 +3,12 @@ use log::{error, info, trace};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
-use std::fs::read_to_string;
 use std::{
+    fs::read_to_string,
     env::temp_dir,
     error::Error,
     path::{Path, PathBuf},
-    process::{exit, Command},
+    process::{exit, Command}
 };
 use traits::{Building, DependencyResolution, Filling};
 #[derive(Serialize, Deserialize, Clone, Debug)]
