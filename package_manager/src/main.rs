@@ -25,6 +25,7 @@ struct Cli {
     /// Creates a new configuration file
     create: Option<String>,
 }
+#[cfg(target_os = "windows")]
 macro_rules! infill {
     ($var:expr) => {
         #[cfg(target_os = "windows")]
