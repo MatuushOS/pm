@@ -22,7 +22,7 @@ fn main() -> io::Result<()> {
     for ent in read_dir(".")? {
         let entry = ent?;
         let path = entry.path();
-        match entry.file_type()? == "yml" {
+        match path.extension().unwrap() == "yml" {
             true => {
                 rename(&path, Path::new("/mtos").join(&path))?;
                 name.pkgs.push(path.to_str().unwrap().to_string());
