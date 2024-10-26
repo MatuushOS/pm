@@ -226,7 +226,7 @@ impl Building for Builder {
             info!("Everything okay, prepare step not present");
         }
         #[cfg(not(target_os = "windows"))]
-        step!(prep);
+        step!(self.prep);
         Ok(())
     }
 
