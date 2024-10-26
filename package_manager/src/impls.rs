@@ -23,6 +23,24 @@ struct Step {
     name: String,
     cmd: Vec<String>,
 }
+macro_rules! step {
+    ($var:expr) => {
+            for i in &$var.0.clone() {
+                let arge = $var.cmd.len();
+                println!("\tRunning step {}", i.name);
+                match Command::new($var.cmd[0].clone())
+                    .args(&i.cmd[1..arge])
+                    .output()
+                {
+                    Ok(ok) => trace!("{:#?}", ok.stdout.iter()),
+                    Err(e) => {
+                        error!("{e:#?}");
+                        exit(1)
+                    }
+                }
+            };
+    };
+}
 #[derive(Serialize, Deserialize, Clone)]
 struct Prepare(Vec<Step>);
 #[derive(Serialize, Deserialize, Clone)]
@@ -74,6 +92,7 @@ impl Builder {
         Ok(())
     }
 }
+#[cfg(target_os = "windows")]
 impl Default for Builder {
     fn default() -> Self {
         Self {
@@ -101,6 +120,41 @@ impl Default for Builder {
                 name: String::new(),
                 cmd: vec![String::new()],
             }])),
+            install: Install(vec![Step {
+                name: String::new(),
+                cmd: vec![String::new()],
+            }]),
+        }
+    }
+}
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+impl Default for Builder {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            category: String::new(),
+            version: (0, 0, 0),
+            sha256: String::new(),
+            dependencies: Some(vec![Deps {
+                name: String::new(),
+                category: String::new(),
+                version: vec![0],
+                sha256: String::new(),
+            }]),
+            dl: vec![Fetch {
+                name: String::new(),
+                ft: String::new(),
+                src: String::new(),
+                sha256: String::new(),
+            }],
+            prepare: Prepare(vec![Step {
+                name: String::new(),
+                cmd: vec![String::new()],
+            }]),
+            build: Build(vec![Step {
+                name: String::new(),
+                cmd: vec![String::new()],
+            }]),
             install: Install(vec![Step {
                 name: String::new(),
                 cmd: vec![String::new()],
@@ -163,43 +217,26 @@ impl Building for Builder {
             }
         }
         println!("Running pre-build steps");
+        #[cfg(target_os = "windows")]
         if let Some(prep) = self.prepare.clone() {
-            prep.clone().0.iter().for_each(|i| {
-                let arge = i.cmd.len();
-                println!("\tRunning step {}", i.name);
-                match Command::new(i.cmd[0].clone())
-                    .args(&i.cmd[1..arge])
-                    .output()
-                {
-                    Ok(ok) => println!("{:#?}", ok.stdout.iter()),
-                    Err(e) => {
-                        eprintln!("{e:#?}");
-                        exit(1)
-                    }
-                }
-            });
+            step!(prep);
         } else if cfg!(target_os = "windows") {
             info!("We are on Windows, we don't need to run prepare tasks");
         } else {
             info!("Everything okay, prepare step not present");
         }
+        #[cfg(not(target_os = "windows"))]
+        step!(prep);
         Ok(())
     }
 
     fn build(&mut self) -> Result<(), Box<dyn Error>> {
+        #[cfg(target_os = "windows")]
         if let Some(b) = self.build.clone() {
-            for i in &mut b.clone().0 {
-                let arge = i.cmd.iter().len();
-                trace!("\tRunning step {}", i.name);
-                Command::new(i.cmd[0].clone())
-                    .args(&mut i.cmd[1..arge])
-                    .output()?;
-            }
-        } else if cfg!(target_os = "windows") {
-            info!("We are on Windows, we don't need to run build tasks");
-        } else {
-            info!("Everything okay, build step not present");
+            step!(b);
         }
+        #[cfg(not(target_os = "windows"))]
+        step!(self.build);
         Ok(())
     }
 
