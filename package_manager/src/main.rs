@@ -73,10 +73,12 @@ fn main() {
     #[cfg(feature = "nogui")]
     if arge.remove.clone().is_some() {
         let mut b = Builder::default();
+        #[cfg(target_os = "windows")]
         infill!(&arge.remove.clone().unwrap());
         b.fill(arge.remove.as_ref().unwrap().into()).unwrap();
         b.remove().unwrap();
     } else if arge.install.is_some() {
+        #[cfg(target_os = "windows")]
         infill!(&arge.install.clone().unwrap());
         let mut b = Builder::default();
         b.fill(arge.install.unwrap().as_str().into()).unwrap();
