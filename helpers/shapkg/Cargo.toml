@@ -9,3 +9,5 @@ package_manager = {path = "../../package_manager", version = "*", workspace = tr
 serde_yaml = {version = "0.9.34", workspace = true}
 sha256 = {version = "1.5.0", workspace = true}
 clap = { workspace = true, features = ["derive"] }
+log = {workspace = true}
+colog = {workspace = true}
