@@ -1,6 +1,5 @@
 # Universal package manager for MatuushOS, Windows, macOS, Linux, ...
-[![.github/workflows/build.yml](https://github.com/MatuushOS/pm/actions/workflows/build.yml/badge.svg)](https://github.com/MatuushOS/pm/actions/workflows/build.yml)
-
+[![Clippy check](https://github.com/MatuushOS/pm/actions/workflows/clippy.yml/badge.svg)](https://github.com/MatuushOS/pm/actions/workflows/clippy.yml)
 This is home to `pm`, a package manager that was firstly designed for MatuushOS, but then redesigned to be cross-platform.
 
 ## Installation
