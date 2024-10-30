@@ -16,6 +16,7 @@ claui = {version = "0.4.0", optional = false}
 regex = "1.11.1"
 colog = "*"
 unarchive = {version = "*", path = "libs/unarchive"}
+rustix = { version = "0.38.38", features = ["fs"] }
 [workspace]
 members = ["package_manager", "libs/colors", "libs/traits", "libs/unarchive", "helpers/shapkg", "helpers/mkrepo"]
 resolver = "2"
@@ -40,6 +41,7 @@ regex.workspace = true
 log.workspace = true
 colog.workspace = true
 unarchive.workspace = true
+rustix.workspace = true
 [features]
 default = []
 gui = ["dep:claui"]

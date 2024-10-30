@@ -16,6 +16,7 @@ log = {workspace = true}
 colog = {workspace = true}
 regex = { workspace = true, features = [] }
 chrono = "0.4.38"
+rustix = {workspace = true}
 [features]
 default = []
 gui = ["dep:claui"]

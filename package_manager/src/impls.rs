@@ -4,7 +4,7 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
 use std::fs::DirBuilder;
-use std::os::linux::fs::symlink_dir;
+use rustix::fs::symlink;
 use std::{
     env::temp_dir,
     error::Error,
@@ -280,7 +280,7 @@ impl Building for Builder {
                 .args(&mut i.cmd[1..arge])
                 .output()?;
             info!(target: "install",  "\tSymlinking final directory to the one with the package name");
-            symlink_dir(val, Path::new("/mtos/pkgs").join(&self.name))?;
+            symlink(val, Path::new("/mtos/pkgs").join(&self.name))?;
         }
         info!(target: "install", "DONE!");
         Ok(())
