@@ -4,7 +4,10 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
 use std::fs::DirBuilder;
+#[cfg(not(target_os = "windows"))]
 use rustix::fs::symlink;
+#[cfg(target_os = "windows")]
+use std::os::windows::fs::symlink_file as symlink;
 use std::{
     env::temp_dir,
     error::Error,
@@ -257,12 +260,13 @@ impl Building for Builder {
             std::env::set_var(
                 "PATH",
                 format!(
-                    "/mtos/pkgs/{}+{}.{}.{}+{}",
+                    "/mtos/pkgs/{}+{}.{}.{}+{}_{}",
                     self.name,
                     self.version.0,
                     self.version.1,
                     self.version.2,
-                    self.sha256
+                    self.sha256,
+                    chrono::NaiveDate::default()
                 ),
             );
             let key = "INSTDIR";
