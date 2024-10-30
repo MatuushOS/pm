@@ -41,6 +41,6 @@ log.workspace = true
 colog.workspace = true
 unarchive.workspace = true
 [features]
-default = ["nogui"]
+default = []
 gui = ["dep:claui"]
 nogui = []

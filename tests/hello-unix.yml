@@ -10,6 +10,16 @@ dl:
   ft: '.tar.bz2'
   src: 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US'
   sha256: 'fcd1e93221074a7b44445a99d81ea26e95fdc4c7e67000e748dab93cb12c2a13'
+prepare:
+  - name: 'Nothing'
+    cmd:
+      - 'echo'
+      - 'Nothing to resolve'
+build:
+  - name: 'Nothing'
+    cmd:
+      - 'echo'
+      - 'Nothing to resolve'
 install:
 - name: 'Extract and install Firefox'
   cmd:

@@ -1,8 +1,8 @@
 use clap::Parser;
 use fetch_data::hash_download;
+use log::info;
 use package_manager::impls::Builder;
 use std::{env::temp_dir, fs::read_to_string, path::Path};
-use log::info;
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]

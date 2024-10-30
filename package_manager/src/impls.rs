@@ -3,6 +3,8 @@ use log::{error, info, trace};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
+use std::fs::DirBuilder;
+use std::os::linux::fs::symlink_dir;
 use std::{
     env::temp_dir,
     error::Error,
@@ -25,20 +27,19 @@ struct Step {
 }
 macro_rules! step {
     ($var:expr) => {
-            for i in &$var.0.clone() {
-                let arge = i.cmd.len();
-                println!("\tRunning step {}", i.name);
-                match Command::new(i.cmd[0].clone())
-                    .args(&i.cmd[1..arge])
-                    .spawn()
-                {
-                    Ok(ok) => trace!("{:#?}", ok.stdout.iter()),
-                    Err(e) => {
-                        error!("{e:#?}");
-                        exit(1)
-                    }
+        for i in &$var.0.clone() {
+            let arge = i.cmd.len();
+            info!("\tRunning step {}", i.name);
+            let cmd = Command::new(i.cmd[0].clone()).args(&i.cmd[1..arge]).spawn();
+            info!("\tRunning command {:#?}", cmd);
+            match cmd {
+                Ok(ok) => trace!("{:#?}", ok.stdout.iter()),
+                Err(e) => {
+                    error!("{e:#?}");
+                    exit(1)
                 }
-            };
+            }
+        }
     };
 }
 #[derive(Serialize, Deserialize, Clone)]
@@ -64,11 +65,11 @@ pub struct Builder {
     pub dl: Vec<Fetch>,
     #[cfg(target_os = "windows")]
     prepare: Option<Prepare>,
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[cfg(not(target_os = "windows"))]
     prepare: Prepare,
     #[cfg(target_os = "windows")]
     build: Option<Build>,
-    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    #[cfg(not(target_os = "windows"))]
     build: Build,
     install: Install,
 }
@@ -87,7 +88,7 @@ impl Builder {
     /// ```
     /// Builder::default().write("")
     /// ```
-    pub(crate) fn write(self, path: &str) -> Result<(), Box<dyn Error>> {
+    pub(crate) fn write(path: &str) -> Result<(), Box<dyn Error>> {
         std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
         Ok(())
     }
@@ -127,7 +128,7 @@ impl Default for Builder {
         }
     }
 }
-#[cfg(any(target_os = "linux", target_os = "macos"))]
+#[cfg(not(target_os = "windows"))]
 impl Default for Builder {
     fn default() -> Self {
         Self {
@@ -241,13 +242,14 @@ impl Building for Builder {
     }
 
     fn install(&mut self) -> Result<(), Box<dyn Error>> {
-        std::fs::DirBuilder::new().recursive(true).create(format!(
-            "/mtos/pkgs/{}+{}{}{}+{}",
+        DirBuilder::new().recursive(true).create(format!(
+            "/mtos/pkgs/{}+{}.{}.{}+{}_{}",
             self.name,
             self.version.0,
             self.version.1,
             self.version.2,
-            self.sha256
+            self.sha256,
+            chrono::NaiveDate::default()
         ))?;
         for i in &mut self.install.0 {
             let arge = i.cmd.iter().len();
@@ -272,11 +274,13 @@ impl Building for Builder {
                 self.version.2,
                 self.sha256
             ));
-            std::fs::DirBuilder::new().recursive(true).create(&val)?;
+            DirBuilder::new().recursive(true).create(&val)?;
             Command::new(i.cmd[0].clone())
-                .env(key, val)
+                .env(key, val.clone())
                 .args(&mut i.cmd[1..arge])
                 .output()?;
+            info!(target: "install",  "\tSymlinking final directory to the one with the package name");
+            symlink_dir(val, Path::new("/mtos/pkgs").join(&self.name))?;
         }
         info!(target: "install", "DONE!");
         Ok(())
