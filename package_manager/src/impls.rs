@@ -217,7 +217,7 @@ impl Building for Builder {
                 Command::new(format!("./{}", path.to_str().unwrap()));
             }
         }
-        println!("Running pre-build steps");
+        info!("Running pre-build steps");
         #[cfg(target_os = "windows")]
         if let Some(prep) = self.prepare.clone() {
             step!(prep);
