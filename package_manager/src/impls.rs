@@ -32,9 +32,11 @@ macro_rules! step {
     ($var:expr) => {
         for i in &$var.0.clone() {
             let arge = i.cmd.len();
+            let args = &i.cmd[1..arge];
+            let command = i.cmd[0].clone(); 
             info!("\tRunning step {}", i.name);
-            let cmd = Command::new(i.cmd[0].clone()).args(&i.cmd[1..arge]).spawn();
-            info!("\tRunning command {:#?}", cmd);
+            let cmd = Command::new(&command).args(args).spawn();
+            info!("\tRunning command {} {}", command, args.join(" "));
             match cmd {
                 Ok(ok) => trace!("{:#?}", ok.stdout.iter()),
                 Err(e) => {
