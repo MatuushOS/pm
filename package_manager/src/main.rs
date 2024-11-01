@@ -5,7 +5,6 @@
 use clap::CommandFactory;
 use clap::Parser;
 use impls::Builder;
-use log::error;
 use std::io;
 use traits::{Building, DependencyResolution, Filling};
 
@@ -35,6 +34,7 @@ macro_rules! infill {
         let c = std::fs::read_to_string(std::path::Path::new(&$var)).unwrap();
         if c.contains("prepare") || c.contains("build") {
             error!("prepare or build failed");
+            std::process::exit(1)
         }
     };
 }
@@ -47,30 +47,36 @@ macro_rules! gui {
         let gui = Cli::command();
         #[cfg(feature = "gui")]
         claui::run(gui, move |matches| {
-            if matches.get_flag("remove") {
-                for p in arge.remove.clone().unwrap().chars() {
-                    let f = std::fs::read_to_string(p.to_string()).unwrap();
-                    let mut b = Builder::default();
-                    b.fill(f.as_str().into());
-                    b.remove();
-                }
-            } else if matches.get_flag("install") {
-                for i in arge.install.clone().unwrap().chars() {
-                    let f = std::fs::read_to_string(i.to_string()).unwrap();
-                    let mut b = Builder::default();
-                    b.fill(f.as_str().parse().unwrap()).unwrap();
-                    b.resolve().unwrap();
-                }
-            } else if matches.get_flag("query") {
-                if let Some(q) = arge.query.clone() {
-                    let f = std::fs::read_to_string(q).unwrap();
-                    let mut b = Builder::default();
-                    b.fill(f.as_str().into()).unwrap();
-                    b.remove().unwrap();
-                }
-            } else if matches.get_flag("create") {
-                Builder::write(arge.create.clone().unwrap().as_str());
-            }
+                        match (matches.get_flag("remove"), matches.get_flag("install"), matches.get_flag("query"), matches.get_flag("create")) {
+                            (true, _, _, _) => {
+                                for p in arge.remove.clone().unwrap().chars() {
+                                    let f = std::fs::read_to_string(p.to_string()).unwrap();
+                                    let mut b = Builder::default();
+                                    b.fill(f.as_str().into());
+                                    b.remove();
+                                }
+                            }
+                            (_, true, _, _) => {
+                                for i in arge.install.clone().unwrap().chars() {
+                                    let f = std::fs::read_to_string(i.to_string()).unwrap();
+                                    let mut b = Builder::default();
+                                    b.fill(f.as_str().parse().unwrap()).unwrap();
+                                    b.resolve().unwrap();
+                                }
+                            }
+                            (_, _, true, _) => {
+                                if let Some(q) = arge.query.clone() {
+                                    let f = std::fs::read_to_string(q).unwrap();
+                                    let mut b = Builder::default();
+                                    b.fill(f.as_str().into()).unwrap();
+                                    b.remove().unwrap();
+                                }
+                            }
+                            (_, _, _, true) => {
+                                Builder::write(arge.create.clone().unwrap().as_str());
+                            }
+                            _ => (),
+                        }
         });
     };
 }
@@ -87,23 +93,29 @@ fn main() -> io::Result<()> {
     colog::init();
     let arge = Cli::parse();
     #[cfg(not(feature = "gui"))]
-    Ok(if arge.remove.clone().is_some() {
-        let mut b = Builder::default();
-        #[cfg(target_os = "windows")]
-        infill!(&arge.remove.clone().unwrap());
-        b.fill(arge.remove.as_ref().unwrap().into()).unwrap();
-        b.remove().unwrap();
-    } else if arge.install.is_some() {
-        #[cfg(target_os = "windows")]
-        infill!(&arge.install.clone().unwrap());
-        let mut b = Builder::default();
-        b.fill(arge.install.unwrap().as_str().into()).unwrap();
-        b.resolve().unwrap();
-    } else if arge.query.is_some() {
-        let mut b = Builder::default();
-        b.fill(arge.query.unwrap().as_str().into()).unwrap();
-        b.query().unwrap();
-    } else if arge.create.is_some() {
-        crate::impls::Builder::write(arge.create.unwrap().as_str()).unwrap();
+    Ok(match (arge.remove, arge.install, arge.query, arge.create) {
+        (Some(pkg), _, _, _) => {
+            #[cfg(target_os = "windows")]
+            infill!(&pkg);
+            let mut b = Builder::default();
+            b.fill(pkg.into()).unwrap();
+            b.remove().unwrap();
+        }
+        (_, Some(pkg), _, _) => {
+            #[cfg(target_os = "windows")]
+            infill!(&pkg);
+            let mut b = Builder::default();
+            b.fill(pkg.into()).unwrap();
+            b.resolve().unwrap();
+        }
+        (_, _, Some(pkg), _) => {
+            let mut b = Builder::default();
+            b.fill(pkg.into()).unwrap();
+            b.query().unwrap();
+        }
+        (_, _, _, Some(path)) => {
+            crate::impls::Builder::write(path.as_str()).unwrap();
+        }
+        _ => (),
     })
 }
