@@ -6,7 +6,7 @@ use clap::CommandFactory;
 use clap::Parser;
 use impls::Builder;
 use std::io;
-use traits::{DependencyResolution, Filling};
+use traits::{Building, DependencyResolution, Filling};
 
 pub mod impls;
 macro_rules! install {
@@ -112,6 +112,8 @@ fn main() {
 /// Main function when GUI feature is disabled.
 #[cfg(not(feature = "gui"))]
 fn main() -> io::Result<()> {
+    use std::fs::write;
+
     colog::init();
     let arge = Cli::parse();
     #[cfg(not(feature = "gui"))]
@@ -126,7 +128,8 @@ fn main() -> io::Result<()> {
             install!(pkg);
         }
         (_, _, _, Some(path)) => {
-            Builder::write(path.as_str()).unwrap();
+            let cfg = serde_yaml::to_string(&Builder::default()).unwrap();
+            write(path, cfg).unwrap()
         }
         _ => (),
     })

@@ -104,21 +104,7 @@ pub struct Builder {
 }
 
 impl Builder {
-    /// Writes the default builder configuration to a file.
-    ///
-    /// # Arguments
-    ///
-    /// * `path`: The path to the file to write.
-    ///
-    /// returns: Result<(), Box<dyn Error>>
-    ///
-    /// # Examples
-    ///
-    /// Builder::default().write("")
-    pub(crate) fn write(path: &str) -> Result<(), Box<dyn Error>> {
-        std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
-        Ok(())
-    }
+    
 }
 
 #[cfg(target_os = "windows")]
