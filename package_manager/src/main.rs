@@ -1,3 +1,4 @@
+#![doc = include_str!("../../README.md")]
 #![warn(clippy::all, clippy::pedantic, clippy::perf)]
 
 #[cfg(feature = "gui")]
@@ -9,22 +10,24 @@ use std::io;
 use traits::{Building, DependencyResolution, Filling};
 
 pub mod impls;
+/// CLI arguments struct.
 #[derive(Parser)]
 #[clap(name = "pm", author = "Matus Mastena <Shadiness9530@proton.me>", about = "Package manager", long_about = None)]
 struct Cli {
+    /// Installs a package.
     #[arg(short, long)]
-    /// Installs a package
     install: Option<String>,
+    /// Removes a package.
     #[arg(short, long)]
-    /// Removes a package
     remove: Option<String>,
+    /// Queries a package.
     #[arg(short, long)]
-    /// Queries a package
     query: Option<String>,
+    /// Creates a new configuration file.
     #[arg(short, long)]
-    /// Creates a new configuration file
     create: Option<String>,
 }
+/// Macro for infilling on Windows.
 #[cfg(target_os = "windows")]
 macro_rules! infill {
     ($var:expr) => {
@@ -35,6 +38,7 @@ macro_rules! infill {
         }
     };
 }
+/// Macro for GUI.
 #[cfg(feature = "gui")]
 macro_rules! gui {
     ($arge:expr) => {
@@ -70,12 +74,14 @@ macro_rules! gui {
         });
     };
 }
+/// Main function when GUI feature is enabled.
 #[cfg(feature = "gui")]
 fn main() {
     let arge = Cli::parse();
     #[cfg(feature = "gui")]
     gui!(arge);
 }
+/// Main function when GUI feature is disabled.
 #[cfg(not(feature = "gui"))]
 fn main() -> io::Result<()> {
     colog::init();

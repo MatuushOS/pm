@@ -1,11 +1,11 @@
 use fetch_data::hash_download;
 use log::{error, info, trace};
 use regex::Regex;
+#[cfg(not(target_os = "windows"))]
+use rustix::fs::symlink;
 use serde::{Deserialize, Serialize};
 use serde_yaml::from_str;
 use std::fs::DirBuilder;
-#[cfg(not(target_os = "windows"))]
-use rustix::fs::symlink;
 #[cfg(target_os = "windows")]
 use std::os::windows::fs::symlink_file as symlink;
 use std::{
@@ -16,6 +16,8 @@ use std::{
     process::{exit, Command},
 };
 use traits::{Building, DependencyResolution, Filling};
+
+/// Structure representing dependencies with name, category, version, and SHA256 checksum.
 #[derive(Serialize, Deserialize, Clone, Debug)]
 struct Deps {
     name: String,
@@ -23,22 +25,26 @@ struct Deps {
     version: Vec<i32>,
     sha256: String,
 }
+
+/// Structure representing a build step with a name and a command vector.
 #[derive(Serialize, Deserialize, Clone)]
 struct Step {
     name: String,
     cmd: Vec<String>,
 }
+
+/// Macro to execute build steps.
 macro_rules! step {
     ($var:expr) => {
         for i in &$var.0.clone() {
-            let arge = i.cmd.len();
-            let args = &i.cmd[1..arge];
-            let command = i.cmd[0].clone(); 
+            let mut iter = i.cmd.iter();
+            let command = iter.next().cloned().unwrap_or_default(); // Get the first element as command
+            let args = iter.cloned().collect::<Vec<String>>(); // Collect the rest as args
             info!("\tRunning step {}", i.name);
             let cmd = Command::new(&command).args(args).spawn();
-            info!("\tRunning command {} {}", command, args.join(" "));
+            info!("\tRunning command {} {}", command, i.cmd.join(" "));
             match cmd {
-                Ok(ok) => trace!("{:#?}", ok.stdout.iter()),
+                Ok(ok) => trace!("{:#?}", ok.stdout),
                 Err(e) => {
                     error!("{e:#?}");
                     exit(1)
@@ -47,12 +53,20 @@ macro_rules! step {
         }
     };
 }
+
+/// Structure representing the preparation steps.
 #[derive(Serialize, Deserialize, Clone)]
 struct Prepare(Vec<Step>);
+
+/// Structure representing the build steps.
 #[derive(Serialize, Deserialize, Clone)]
 struct Build(Vec<Step>);
+
+/// Structure representing the installation steps.
 #[derive(Serialize, Deserialize, Clone)]
 struct Install(Vec<Step>);
+
+/// Structure representing a file to fetch with name, file type, source URL, and SHA256 checksum.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Fetch {
     pub name: String,
@@ -60,6 +74,8 @@ pub struct Fetch {
     pub src: String,
     pub sha256: String,
 }
+
+/// Structure representing a builder with name, category, version, SHA256 checksum, dependencies, downloads, prepare, build, and install steps.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Builder {
     name: String,
@@ -80,27 +96,27 @@ pub struct Builder {
 }
 
 impl Builder {
-    ///
+    /// Writes the default builder configuration to a file.
     ///
     /// # Arguments
     ///
-    /// * `path`:
+    /// * `path`: The path to the file to write.
     ///
-    /// returns: Result<(), Box<dyn Error, Global>>
+    /// returns: Result<(), Box<dyn Error>>
     ///
     /// # Examples
     ///
-    /// ```
     /// Builder::default().write("")
-    /// ```
     pub(crate) fn write(path: &str) -> Result<(), Box<dyn Error>> {
         std::fs::write(path, serde_yaml::to_string::<Self>(&Self::default())?)?;
         Ok(())
     }
 }
+
 #[cfg(target_os = "windows")]
 impl Default for Builder {
     fn default() -> Self {
+        // Default implementation for Windows
         Self {
             name: String::new(),
             category: String::new(),
@@ -133,9 +149,11 @@ impl Default for Builder {
         }
     }
 }
+
 #[cfg(not(target_os = "windows"))]
 impl Default for Builder {
     fn default() -> Self {
+        // Default implementation for non-Windows
         Self {
             name: String::new(),
             category: String::new(),
@@ -168,7 +186,9 @@ impl Default for Builder {
         }
     }
 }
+
 impl Filling for Builder {
+    /// Fills the builder from a YAML file.
     fn fill(&mut self, f: PathBuf) -> Result<(), Box<dyn Error>> {
         let f = read_to_string(f.as_path()).unwrap();
         let cfg: Self = from_str(&f).unwrap();
@@ -183,7 +203,9 @@ impl Filling for Builder {
         Ok(())
     }
 }
+
 impl DependencyResolution for Builder {
+    /// Resolves dependencies.
     fn resolve(&mut self) -> Result<(), Box<dyn Error>> {
         self.prep()?;
         self.build()?;
@@ -191,8 +213,9 @@ impl DependencyResolution for Builder {
         Ok(())
     }
 }
+
 impl Building for Builder {
-    /// Mainly dependency resolution and downloads
+    /// Prepares the build by resolving dependencies and downloading files.
     fn prep(&self) -> Result<(), Box<dyn Error>> {
         trace!(target: "prepare", "Making package {}", self.name);
         if self.dependencies.is_none() {
@@ -236,6 +259,7 @@ impl Building for Builder {
         Ok(())
     }
 
+    /// Builds the package.
     fn build(&mut self) -> Result<(), Box<dyn Error>> {
         #[cfg(target_os = "windows")]
         if let Some(b) = self.build.clone() {
@@ -246,6 +270,7 @@ impl Building for Builder {
         Ok(())
     }
 
+    /// Installs the package.
     fn install(&mut self) -> Result<(), Box<dyn Error>> {
         DirBuilder::new().recursive(true).create(format!(
             "/mtos/pkgs/{}+{}.{}.{}+{}_{}",
@@ -292,6 +317,7 @@ impl Building for Builder {
         Ok(())
     }
 
+    /// Removes the package.
     fn remove(&self) -> Result<(), Box<dyn Error>> {
         std::fs::remove_dir_all(format!(
             "/mtos/pkgs/{}+{}.{}.{}+{}",
@@ -304,6 +330,7 @@ impl Building for Builder {
         Ok(())
     }
 
+    /// Queries package information.
     fn query(&self) -> Result<(), Box<dyn Error>> {
         info!("Name: {}/{}", self.category, self.name);
         info!("Version: {:#?}", self.version);
