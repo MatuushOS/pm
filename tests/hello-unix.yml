@@ -7,9 +7,9 @@ version:
 sha256: ''
 dl:
 - name: 'ff'
-  ft: '.tar.bz2'
+  ft: 'tar.bz2'
   src: 'https://download.mozilla.org/?product=firefox-latest-ssl&os=linux64&lang=en-US'
-  sha256: 'fcd1e93221074a7b44445a99d81ea26e95fdc4c7e67000e748dab93cb12c2a13'
+  sha256: 'e3a6f9a68ac72f5df01fac8c97c6de1a353af4b350b8c8b49b2c26c1fbbb2538'
 prepare:
   - name: 'Nothing'
     cmd:
@@ -24,5 +24,5 @@ install:
 - name: 'Extract and install Firefox'
   cmd:
   - 'mv'
-  - 'firefox/*'
+  - 'ff/*'
   - '$INSTDIR'

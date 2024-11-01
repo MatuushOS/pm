@@ -6,9 +6,18 @@ use clap::CommandFactory;
 use clap::Parser;
 use impls::Builder;
 use std::io;
-use traits::{Building, DependencyResolution, Filling};
+use traits::{DependencyResolution, Filling};
 
 pub mod impls;
+macro_rules! install {
+    ($pkg:expr) => {
+        #[cfg(target_os = "windows")]
+        infill!(&$pkg);
+        let mut b = Builder::default();
+        b.fill($pkg.into()).unwrap();
+        b.resolve().unwrap();
+    };
+}
 /// CLI arguments struct.
 #[derive(Parser)]
 #[clap(name = "pm", author = "Matus Mastena <Shadiness9530@proton.me>", about = "Package manager", long_about = None)]
@@ -63,7 +72,15 @@ macro_rules! gui {
                 }
                 (_, true, _, _) => {
                     for i in arge.install.clone().unwrap().chars() {
-                        let f = std::fs::read_to_string(i.to_string()).unwrap();
+                        macro_rules! install {
+                            ($pkg:expr) => {
+                                #[cfg(target_os = "windows")]
+                                infill!(&$pkg);
+                                let mut b = Builder::default();
+                                b.fill($pkg.into()).unwrap();
+                                b.resolve().unwrap();
+                            };
+                        }               let f = std::fs::read_to_string(i.to_string()).unwrap();
                         let mut b = Builder::default();
                         b.fill(f.as_str().parse().unwrap()).unwrap();
                         b.resolve().unwrap();
@@ -100,26 +117,16 @@ fn main() -> io::Result<()> {
     #[cfg(not(feature = "gui"))]
     Ok(match (arge.remove, arge.install, arge.query, arge.create) {
         (Some(pkg), _, _, _) => {
-            #[cfg(target_os = "windows")]
-            infill!(&pkg);
-            let mut b = Builder::default();
-            b.fill(pkg.into()).unwrap();
-            b.remove().unwrap();
+            install!(pkg);
         }
         (_, Some(pkg), _, _) => {
-            #[cfg(target_os = "windows")]
-            infill!(&pkg);
-            let mut b = Builder::default();
-            b.fill(pkg.into()).unwrap();
-            b.resolve().unwrap();
+            install!(pkg);
         }
         (_, _, Some(pkg), _) => {
-            let mut b = Builder::default();
-            b.fill(pkg.into()).unwrap();
-            b.query().unwrap();
+            install!(pkg);
         }
         (_, _, _, Some(path)) => {
-            crate::impls::Builder::write(path.as_str()).unwrap();
+            Builder::write(path.as_str()).unwrap();
         }
         _ => (),
     })
