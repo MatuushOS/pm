@@ -1,16 +1,16 @@
+
+use regex::Regex;
 use std::{path::PathBuf, process::Command};
 
 use log::{error, trace};
 
 pub fn extract(f: PathBuf) {
+    let re = Regex::new(r"\.tar(\.gz|\.bz2)?$").unwrap();
+
     match f.as_path().extension() {
-        Some(ext) => match ext
-            .to_ascii_lowercase()
-            .into_string()
-            .unwrap()
-            .as_str()
-        {
-            "tar.gz" => {
+        Some(ext) => {
+            let ext_str = ext.to_ascii_lowercase().into_string().unwrap();
+            if re.is_match(&ext_str) {
                 match Command::new("tar")
                     .args(["-xvf", f.as_path().to_str().unwrap(), "-C", "src/"])
                     .output()
@@ -18,25 +18,19 @@ pub fn extract(f: PathBuf) {
                     Ok(ok) => trace!("extraction complete, {ok:#?}"),
                     Err(e) => error!("extraction failed, {e:#?}"),
                 }
-            }
-            "tar.bz2" => {
-                match Command::new("tar")
-                    .args(["-xvf", f.as_path().to_str().unwrap(), "-C", "src/"])
+            } else if ext_str == "zip" {
+                match Command::new("unzip")
+                    .args([f.as_path().to_str().unwrap(), "-d", "src/"])
                     .output()
                 {
                     Ok(ok) => trace!("extraction complete, {ok:#?}"),
                     Err(e) => error!("extraction failed, {e:#?}"),
                 }
+            } else {
+                error!("Unknown extension")
             }
-            ".zip" => match Command::new("unzip")
-                .args([f.as_path().to_str().unwrap(), "-d", "src/"])
-                .output()
-            {
-                Ok(ok) => trace!("extraction complete, {ok:#?}"),
-                Err(e) => error!("extraction failed, {e:#?}"),
-            },
-            _ => error!("Unknown extension"),
-        },
+        }
         None => error!("No extension provided"),
     }
 }
+
