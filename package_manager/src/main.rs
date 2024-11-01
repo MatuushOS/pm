@@ -47,36 +47,41 @@ macro_rules! gui {
         let gui = Cli::command();
         #[cfg(feature = "gui")]
         claui::run(gui, move |matches| {
-                        match (matches.get_flag("remove"), matches.get_flag("install"), matches.get_flag("query"), matches.get_flag("create")) {
-                            (true, _, _, _) => {
-                                for p in arge.remove.clone().unwrap().chars() {
-                                    let f = std::fs::read_to_string(p.to_string()).unwrap();
-                                    let mut b = Builder::default();
-                                    b.fill(f.as_str().into());
-                                    b.remove();
-                                }
-                            }
-                            (_, true, _, _) => {
-                                for i in arge.install.clone().unwrap().chars() {
-                                    let f = std::fs::read_to_string(i.to_string()).unwrap();
-                                    let mut b = Builder::default();
-                                    b.fill(f.as_str().parse().unwrap()).unwrap();
-                                    b.resolve().unwrap();
-                                }
-                            }
-                            (_, _, true, _) => {
-                                if let Some(q) = arge.query.clone() {
-                                    let f = std::fs::read_to_string(q).unwrap();
-                                    let mut b = Builder::default();
-                                    b.fill(f.as_str().into()).unwrap();
-                                    b.remove().unwrap();
-                                }
-                            }
-                            (_, _, _, true) => {
-                                Builder::write(arge.create.clone().unwrap().as_str());
-                            }
-                            _ => (),
-                        }
+            match (
+                matches.get_flag("remove"),
+                matches.get_flag("install"),
+                matches.get_flag("query"),
+                matches.get_flag("create"),
+            ) {
+                (true, _, _, _) => {
+                    for p in arge.remove.clone().unwrap().chars() {
+                        let f = std::fs::read_to_string(p.to_string()).unwrap();
+                        let mut b = Builder::default();
+                        b.fill(f.as_str().into());
+                        b.remove();
+                    }
+                }
+                (_, true, _, _) => {
+                    for i in arge.install.clone().unwrap().chars() {
+                        let f = std::fs::read_to_string(i.to_string()).unwrap();
+                        let mut b = Builder::default();
+                        b.fill(f.as_str().parse().unwrap()).unwrap();
+                        b.resolve().unwrap();
+                    }
+                }
+                (_, _, true, _) => {
+                    if let Some(q) = arge.query.clone() {
+                        let f = std::fs::read_to_string(q).unwrap();
+                        let mut b = Builder::default();
+                        b.fill(f.as_str().into()).unwrap();
+                        b.remove().unwrap();
+                    }
+                }
+                (_, _, _, true) => {
+                    Builder::write(arge.create.clone().unwrap().as_str());
+                }
+                _ => (),
+            }
         });
     };
 }

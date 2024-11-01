@@ -36,29 +36,29 @@ struct Step {
 /// Macro to execute build steps.
 macro_rules! step {
     ($var:expr) => {
-            for i in &$var.0 {
-                let (command, args) = i.cmd.split_first().unwrap();
-                info!("\tRunning step {}", i.name);
-                let mut cmd = Command::new(command);
-                cmd.args(args);
-                let output = cmd.output();
-        
-                match output {
-                    Ok(output) => {
-                        info!("\tRunning command {} {:?}", command, args);
-                        if output.status.success() {
-                            trace!("{:#?}", output.stdout);
-                        } else {
-                            error!("{:#?}", output.stderr);
-                            exit(1);
-                        }
-                    }
-                    Err(e) => {
-                        error!("{e:#?}");
-                        exit(1)
+        for i in &$var.0 {
+            let (command, args) = i.cmd.split_first().unwrap();
+            info!("\tRunning step {}", i.name);
+            let mut cmd = Command::new(command);
+            cmd.args(args);
+            let output = cmd.output();
+
+            match output {
+                Ok(output) => {
+                    info!("\tRunning command {} {:?}", command, args);
+                    if output.status.success() {
+                        trace!("{:#?}", output.stdout);
+                    } else {
+                        error!("{:#?}", output.stderr);
+                        exit(1);
                     }
                 }
+                Err(e) => {
+                    error!("{e:#?}");
+                    exit(1)
+                }
             }
+        }
     };
 }
 
