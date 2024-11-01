@@ -1,4 +1,4 @@
-#[cfg(test)]
+
 mod tests {
     use std::path::Path;
     use std::process::Command;
@@ -7,7 +7,7 @@ mod tests {
     #[cfg(target_os = "windows")]
     fn check_install_windows() {
         assert!(Command::new(Path::new(
-            &Path::new("target").join("debug").join("pm")
+            &Path::new("target").join("debug").join("pm.exe")
         ))
         .args(["-i", "tests/hello-windows.yml"])
         .status()
@@ -15,7 +15,7 @@ mod tests {
         .success())
     }
     #[test]
-    #[cfg(any(target_os = "macos", target_os = "linux"))]
+    #[cfg(not(target_os = "windows"))]
     fn check_install_macos_unix_linux() {
         assert!(Command::new(Path::new(
             &Path::new("target").join("debug").join("pm")
