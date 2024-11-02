@@ -80,7 +80,8 @@ macro_rules! gui {
                                 b.fill($pkg.into()).unwrap();
                                 b.resolve().unwrap();
                             };
-                        }               let f = std::fs::read_to_string(i.to_string()).unwrap();
+                        }
+                        let f = std::fs::read_to_string(i.to_string()).unwrap();
                         let mut b = Builder::default();
                         b.fill(f.as_str().parse().unwrap()).unwrap();
                         b.resolve().unwrap();

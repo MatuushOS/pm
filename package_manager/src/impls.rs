@@ -103,9 +103,7 @@ pub struct Builder {
     install: Install,
 }
 
-impl Builder {
-    
-}
+impl Builder {}
 
 #[cfg(target_os = "windows")]
 impl Default for Builder {
@@ -223,9 +221,15 @@ impl Building for Builder {
             }
         }
         for i in &self.dl.clone() {
-            info!("Downloading {}.{} from {}", i.name, i.ft, i.src);
             let path = Path::new(temp_dir().clone().as_path())
-                .join(format!("{}{}", i.name, i.ft));
+                .join(format!("{}.{}", i.name, i.ft));
+            info!(
+                "Downloading {}.{} from {} to {}",
+                i.name,
+                i.ft,
+                i.src,
+                path.display()
+            );
             if hash_download(i.clone().src, &path)? != i.sha256 {
                 std::fs::remove_file(path)?;
                 error!("FILE IS UNSAFE TO USE! STOPPING THE OPENRATION NOW!!!");
@@ -263,7 +267,6 @@ impl Building for Builder {
         step!(self.build);
         Ok(())
     }
-
     /// Installs the package.
     fn install(&mut self) -> Result<(), Box<dyn Error>> {
         DirBuilder::new().recursive(true).create(format!(
@@ -302,7 +305,7 @@ impl Building for Builder {
             DirBuilder::new().recursive(true).create(&val)?;
             Command::new(i.cmd[0].clone())
                 .env(key, val.clone())
-                .args(&mut i.cmd[1..arge])
+                .args(&mut i.cmd[1..=arge])
                 .output()?;
             info!(target: "install",  "\tSymlinking final directory to the one with the package name");
             symlink(val, Path::new("/mtos/pkgs").join(&self.name))?;
