@@ -16,7 +16,7 @@ claui = {version = "0.4.0", optional = false}
 regex = "1.11.1"
 colog = "*"
 unarchive = {version = "*", path = "libs/unarchive"}
-rustix = { version = "0.38.38", features = ["fs"] }
+rustix = { version = "0.38.40", features = ["fs"] }
 chrono = "0.4.38"
 [workspace]
 members = ["package_manager", "libs/colors", "libs/traits", "libs/unarchive", "helpers/shapkg", "helpers/mkrepo"]
