@@ -5,10 +5,18 @@ use std::{
     process::{exit, Command, ExitStatus},
     env::{remove_var, set_var}
 };
+use std::fs::{read_dir, write};
+
 /// Installs the package.
 /// Sets the INSTDIR environment variable for easy putting.
 pub fn install(pkg_name: &str) {
     let path = Path::new(&temp_dir()).join("pkg");
+    let mut paths: String = String::new();
+    for i in read_dir(&paths).unwrap() {
+        let p = i.unwrap();
+        paths.push_str(p.path().to_str().unwrap())
+    }
+    write(Path::new(&paths).join(".pm_metadata"), &paths).unwrap();
     Command::new("tar")
         .args([
             "-czvf",
