@@ -16,7 +16,6 @@ pub fn install(pkg_name: &str) {
         let p = i.unwrap();
         paths.push_str(p.path().to_str().unwrap())
     }
-    write(Path::new(&paths).join(".pm_metadata"), &paths).unwrap();
     Command::new("tar")
         .args([
             "-czvf",
