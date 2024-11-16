@@ -1,12 +1,12 @@
-//! ONLY PROTOTYPE, DO NOT USE
-
 mod functions;
 
+use log::{error, info};
 use rhai::Engine;
 use rhai_autodocs::export::SectionFormat;
-use std::env::args;
-use std::process::exit;
-use log::info;
+use std::{
+    env::args,
+    process::exit
+};
 
 fn main() {
     colog::init();
@@ -49,7 +49,9 @@ fn main() {
                 info!("Making package {}", arg[pkg]);
                 parse
                     .eval_file::<()>(format!("{}.mt", arg[pkg]).into())
-                    .unwrap();
+                    .unwrap_or_else(|e|  {
+                       error!("Script failed to run\n{e}");
+                    });
             }
         }
         "help" | _ => {

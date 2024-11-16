@@ -1,25 +1,16 @@
 # Universal package manager for MatuushOS, Windows, macOS, Linux, ...
 [![Clippy check](https://github.com/MatuushOS/pm/actions/workflows/clippy.yml/badge.svg)](https://github.com/MatuushOS/pm/actions/workflows/clippy.yml)
 
-This is home to `pm`, a package manager that was firstly designed for MatuushOS, but then redesigned to be cross-platform.
+This is home to `pm`, a package manager that was firstly designed for MatuushOS, but then redesigned to be cross-platform. It uses 
 
 ## Installation
 
 You can just clone this repository, run `cargo build --workspace --release` and copy the contents of `target/release` directory to system path.
 
 ## To do list
-- [ ] Make installing packages work
+- [x] Make installing packages work
   - [x] Windows
-  - [ ] Unix like OSes (macOS, Linux, BSDs)
-- [ ] Write tests that cover every binary target
-- [ ] Decouple traits and trait implementations from `package_manager` crate
-
-## Feature comparison
-
-|                      | Windows | Unix-like OSes |
-|----------------------|---------|----------------|
-| Building packages    | ❎       | ✅              |
-| Package installation | ✅       | ✅              |
+  - [x] Unix like OSes (macOS, Linux, BSDs)
 
 ## `pm` options
 
