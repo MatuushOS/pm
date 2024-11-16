@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+compress-tools = { version = "0.14.3"}
 log = {workspace = true}
 regex = {workspace = true}

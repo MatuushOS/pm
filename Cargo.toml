@@ -44,6 +44,7 @@ colog.workspace = true
 unarchive.workspace = true
 rustix.workspace = true
 chrono.workspace = true
+compress-tools = "0.15.1"
 [features]
 default = []
 gui = ["dep:claui"]

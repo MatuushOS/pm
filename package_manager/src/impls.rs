@@ -17,8 +17,19 @@ use std::{
 };
 use traits::{Building, DependencyResolution, Filling};
 
+macro_rules! res {
+    ($v:expr) => {
+        match $v {
+            Ok(ok) => info!("{ok:#?}"),
+            Err(e) => error!("{e:#?}"),
+        }
+    };
+}
+
 /// Structure representing dependencies with name, category, version, and SHA256 checksum.
-#[derive(Serialize, Deserialize, Clone, Debug)]
+
+#[derive(Serialize, Deserialize, Clone)]
+#[derive(Debug)]
 struct Deps {
     name: String,
     pub category: String,
@@ -237,8 +248,8 @@ impl Building for Builder {
             } else if path.extension()
                 == Some(Regex::new(r".tar.*").unwrap().as_str().as_ref())
             {
-                unarchive::extract(path);
-                std::env::set_current_dir("src")?;
+                let change = std::env::set_current_dir(unarchive::extract(path));
+                res!(change);
             } else {
                 Command::new(format!("./{}", path.to_str().unwrap()));
             }
