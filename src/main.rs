@@ -3,10 +3,9 @@ mod functions;
 use log::{error, info};
 use rhai::Engine;
 use rhai_autodocs::export::SectionFormat;
-use std::{
-    env::args,
-    process::exit
-};
+use std::env::temp_dir;
+use std::path::Path;
+use std::{env::args, process::exit};
 
 fn main() {
     colog::init();
@@ -37,7 +36,7 @@ fn main() {
                 println!("{name}\n{contents}")
             }
         }
-        "build" => {
+        "install" => {
             if arg[2..arg.len()].is_empty() {
                 info!(
                     "Syntax: {} build [PACKAGE]\nType {} help for more information",
@@ -49,8 +48,8 @@ fn main() {
                 info!("Making package {}", arg[pkg]);
                 parse
                     .eval_file::<()>(format!("{}.mt", arg[pkg]).into())
-                    .unwrap_or_else(|e|  {
-                       error!("Script failed to run\n{e}");
+                    .unwrap_or_else(|e| {
+                        error!("Script failed to run\n{e}");
                     });
             }
         }
@@ -60,7 +59,7 @@ fn main() {
             info!("Commands:\n");
             info!("generate [LOC]\tGenerate example configuration file");
             info!("docs\t\tGenerate documentation. Make sure you pipe it to tee or to redirect the output to Markdown file");
-            info!("build [PKG]\t\tBuild file")
+            info!("install [PKG]\t\tBuild file")
         }
     }
 }

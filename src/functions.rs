@@ -1,29 +1,47 @@
+use is_root::is_root;
 use log::{error, info};
+use std::env::home_dir;
+use std::fs::{rename, DirBuilder};
+use std::os::unix::fs::symlink;
 use std::{
     env::temp_dir,
+    env::{remove_var, set_var},
     path::Path,
     process::{exit, Command, ExitStatus},
-    env::{remove_var, set_var}
 };
-use std::fs::{read_dir, write};
 
 /// Installs the package.
 /// Sets the INSTDIR environment variable for easy putting.
 pub fn install(pkg_name: &str) {
-    let path = Path::new(&temp_dir()).join("pkg");
-    let mut paths: String = String::new();
-    for i in read_dir(&paths).unwrap() {
-        let p = i.unwrap();
-        paths.push_str(p.path().to_str().unwrap())
+    match is_root() {
+        true => {
+            rename(
+                Path::new(&temp_dir()).join("pkg").to_str().unwrap(),
+                Path::new(&temp_dir()).join(pkg_name),
+            )
+            .unwrap();
+            symlink(
+                Path::new(&temp_dir()).join(pkg_name),
+                format!("/mtos/pkgs/{pkg_name}"),
+            )
+            .unwrap()
+        }
+        false => {
+            let path = Path::new(&home_dir().unwrap()).join(".mtos/pkgs");
+            DirBuilder::new().recursive(true).create(&path).unwrap();
+
+            rename(
+                Path::new(&temp_dir()).join("pkg").to_str().unwrap(),
+                Path::new(&temp_dir()).join(pkg_name),
+            )
+            .unwrap();
+            symlink(
+                Path::new(&temp_dir()).join(pkg_name),
+                format!("{}/{pkg_name}", path.to_str().unwrap()),
+            )
+            .unwrap()
+        }
     }
-    Command::new("tar")
-        .args([
-            "-czvf",
-            format!("{pkg_name}.pm.tar.gz").as_str(),
-            path.to_str().unwrap(),
-        ])
-        .status()
-        .unwrap();
     info!("DONE!")
 }
 /// Sets the variable
@@ -38,7 +56,10 @@ pub fn unset_env(env: &str) {
 pub fn step(name: &str, cmd: &str, args: &str) -> ExitStatus {
     info!("Running command {name}");
     let args: Vec<_> = args.split_whitespace().collect();
-    Command::new(cmd).args(&args[0..args.len()]).status().unwrap()
+    Command::new(cmd)
+        .args(&args[0..args.len()])
+        .status()
+        .unwrap()
 }
 
 /// Downloads and extracts the target file.
