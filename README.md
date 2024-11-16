@@ -15,14 +15,13 @@ You can just clone this repository, run `cargo build --workspace --release` and 
 ## `pm` options
 
 ```
-Package manager
+[*] Package manager
+[*] Usage: target/debug/pm OPTIONS [ARGUMENTS]
+ |  
+[*] Commands:
+ |  
+[*] generate [LOC]      Generate example configuration file
+[*] docs                Generate documentation. Make sure you pipe it to tee or to redirect the output to Markdown file
+[*] build [PKG]         Build file
 
-Usage: pm [OPTIONS]
-
-Options:
-  -i, --install <INSTALL>  Installs a package
-  -r, --remove <REMOVE>    Removes a package
-  -q, --query <QUERY>      Queries a package
-  -c, --create <CREATE>    Creates a new configuration file
-  -h, --help               Print help
 ```
