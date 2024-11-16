@@ -1,0 +1,363 @@
+# hello sk.po
+# Copyright (C) 1999, 2000, 2001, 2002, 2008, 2010, 2011, 2012, 2013, 2015 Free Software Foundation, Inc.
+# This file is distributed under the same license as the hello package.
+# Marcel Telka <marcel@telka.sk>, 2002, 2008, 2010, 2011, 2012, 2013, 2015.
+# Stanislav Meduna <stano@meduna.org>, 2000, 2001.
+# Miroslav Vasko <vasko@debian.cz>, 1999.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: hello 2.10\n"
+"Report-Msgid-Bugs-To: bug-hello@gnu.org\n"
+"POT-Creation-Date: 2022-01-31 18:57+0000\n"
+"PO-Revision-Date: 2015-01-02 10:29+0100\n"
+"Last-Translator: Marcel Telka <marcel@telka.sk>\n"
+"Language-Team: Slovak <sk-i18n@lists.linux.sk>\n"
+"Language: sk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8-bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:41
+msgid "Karl Berry"
+msgstr ""
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:42
+msgid "Sami Kerola"
+msgstr ""
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:43
+msgid "Jim Meyering"
+msgstr ""
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:44
+msgid "Reuben Thomas"
+msgstr ""
+
+#. TRANSLATORS: --help output 1 (synopsis)
+#. no-wrap
+#: src/hello.c:55
+#, c-format
+msgid "Usage: %s [OPTION]...\n"
+msgstr "Použitie: %s [VOĽBA]...\n"
+
+#. TRANSLATORS: --help output 2 (brief description)
+#. no-wrap
+#: src/hello.c:58
+msgid "Print a friendly, customizable greeting.\n"
+msgstr "Vytlačiť priateľský, nastaviteľný pozdrav.\n"
+
+#. TRANSLATORS: --help output 3: options
+#. no-wrap
+#: src/hello.c:62
+#, fuzzy
+msgid "  -t, --traditional       use traditional greeting\n"
+msgstr ""
+"  -t, --traditional       použiť tradičný pozdrav\n"
+"  -g, --greeting=TEXT     použiť TEXT ako správu pozdravu\n"
+
+#: src/hello.c:63
+#, fuzzy
+msgid "  -g, --greeting=TEXT     use TEXT as the greeting message\n"
+msgstr ""
+"  -t, --traditional       použiť tradičný pozdrav\n"
+"  -g, --greeting=TEXT     použiť TEXT ako správu pozdravu\n"
+
+#: src/hello.c:65
+msgid "      --help     display this help and exit\n"
+msgstr ""
+
+#: src/hello.c:66
+msgid "      --version  output version information and exit\n"
+msgstr ""
+
+#. TRANSLATORS: Replace LANG_CODE in this URL with your language code
+#. <https://translationproject.org/team/LANG_CODE.html> to form one of
+#. the URLs at https://translationproject.org/team/.  Otherwise, replace
+#. the entire URL with your translation team's email address.
+#: src/hello.c:76
+#, c-format
+msgid "Report %s translation bugs to <https://translationproject.org/team/>\n"
+msgstr ""
+
+#: src/hello.c:112
+msgid "hello, world"
+msgstr "ahoj, svet"
+
+#: src/hello.c:123
+msgid "extra operand"
+msgstr "operand navyše"
+
+#: src/hello.c:149
+msgid "Hello, world!"
+msgstr "Ahoj, svet!"
+
+#: src/hello.c:163
+#, c-format
+msgid "conversion to a multibyte string failed"
+msgstr "konverzia na viacbajtový reťazec zlyhala"
+
+#: src/system.h:57
+#, c-format
+msgid "Try '%s --help' for more information.\n"
+msgstr ""
+
+#: lib/error.c:195
+msgid "Unknown system error"
+msgstr "Neznáma systémová chyba"
+
+#: lib/getopt.c:278
+#, fuzzy, c-format
+msgid "%s: option '%s%s' is ambiguous\n"
+msgstr "%s: voľba '-W %s' je nejasná\n"
+
+#: lib/getopt.c:284
+#, fuzzy, c-format
+#| msgid "%s: option '%s' is ambiguous; possibilities:"
+msgid "%s: option '%s%s' is ambiguous; possibilities:"
+msgstr "%s: voľba '%s' je nejasná; možnosti:"
+
+#: lib/getopt.c:319
+#, fuzzy, c-format
+#| msgid "%s: unrecognized option '%c%s'\n"
+msgid "%s: unrecognized option '%s%s'\n"
+msgstr "%s: neznáma voľba '%c%s'\n"
+
+#: lib/getopt.c:345
+#, fuzzy, c-format
+#| msgid "%s: option '%c%s' doesn't allow an argument\n"
+msgid "%s: option '%s%s' doesn't allow an argument\n"
+msgstr "%s: voľba '%c%s' nepovoľuje argument\n"
+
+#: lib/getopt.c:360
+#, fuzzy, c-format
+#| msgid "%s: option '--%s' requires an argument\n"
+msgid "%s: option '%s%s' requires an argument\n"
+msgstr "%s: voľba '--%s' vyžaduje argument\n"
+
+#: lib/getopt.c:621
+#, c-format
+msgid "%s: invalid option -- '%c'\n"
+msgstr "%s: neplatná voľba -- '%c'\n"
+
+#: lib/getopt.c:636 lib/getopt.c:682
+#, c-format
+msgid "%s: option requires an argument -- '%c'\n"
+msgstr "%s: voľba vyžaduje argument -- '%c'\n"
+
+#: lib/closeout.c:122
+msgid "write error"
+msgstr "chyba zápisu"
+
+#. TRANSLATORS:
+#. Get translations for open and closing quotation marks.
+#. The message catalog should translate "`" to a left
+#. quotation mark suitable for the locale, and similarly for
+#. "'".  For example, a French Unicode local should translate
+#. these to U+00AB (LEFT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), and U+00BB (RIGHT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), respectively.
+#.
+#. If the catalog has no translation, we will try to
+#. use Unicode U+2018 (LEFT SINGLE QUOTATION MARK) and
+#. Unicode U+2019 (RIGHT SINGLE QUOTATION MARK).  If the
+#. current locale is not Unicode, locale_quoting_style
+#. will quote 'like this', and clocale_quoting_style will
+#. quote "like this".  You should always include translations
+#. for "`" and "'" even if U+2018 and U+2019 are appropriate
+#. for your locale.
+#.
+#. If you don't know what to put here, please see
+#. <https://en.wikipedia.org/wiki/Quotation_marks_in_other_languages>
+#. and use glyphs suitable for your language.
+#: lib/quotearg.c:355
+msgid "`"
+msgstr "„"
+
+#: lib/quotearg.c:356
+msgid "'"
+msgstr "“"
+
+#: lib/version-etc.c:73
+#, c-format
+msgid "Packaged by %s (%s)\n"
+msgstr ""
+
+#: lib/version-etc.c:76
+#, c-format
+msgid "Packaged by %s\n"
+msgstr ""
+
+#. TRANSLATORS: Translate "(C)" to the copyright symbol
+#. (C-in-a-circle), if this symbol is available in the user's
+#. locale.  Otherwise, do not translate "(C)"; leave it as-is.
+#: lib/version-etc.c:83
+msgid "(C)"
+msgstr ""
+
+#. TRANSLATORS: The %s placeholder is the web address of the GPL license.
+#: lib/version-etc.c:88
+#, fuzzy, c-format
+msgid ""
+"License GPLv3+: GNU GPL version 3 or later <%s>.\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+msgstr ""
+"Autorské práva © %d Free Software Foundation, Inc.\n"
+"Licencia GPLv3+: GNU GPL verzia 3 alebo novšia <http://gnu.org/licenses/gpl."
+"html>\n"
+"Toto je slobodný softvér: môžete ho slobodne meniť a ďalej šíriť.\n"
+"Neposkytuje sa ŽIADNA ZÁRUKA v rozsahu povolenom zákonmi.\n"
+
+#. TRANSLATORS: %s denotes an author name.
+#: lib/version-etc.c:105
+#, c-format
+msgid "Written by %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: lib/version-etc.c:109
+#, c-format
+msgid "Written by %s and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: lib/version-etc.c:113
+#, c-format
+msgid "Written by %s, %s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:120
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:127
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:134
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:142
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:150
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:159
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:170
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, %s, and others.\n"
+msgstr ""
+
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying
+#. "Report translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email address).
+#: lib/version-etc.c:249
+#, c-format
+msgid "Report bugs to: %s\n"
+msgstr ""
+"Chyby hláste na: %s (po anglicky)\n"
+"Komentáre k slovenskému prekladu zasielajte na: sk-i18n@lists.linux.sk\n"
+
+#: lib/version-etc.c:251
+#, c-format
+msgid "Report %s bugs to: %s\n"
+msgstr "Chyby v %s hláste na: %s (po anglicky)\n"
+
+#: lib/version-etc.c:255 lib/version-etc.c:257
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "Domovská stránka %s: <%s>\n"
+
+#: lib/version-etc.c:260
+#, fuzzy, c-format
+msgid "General help using GNU software: <%s>\n"
+msgstr ""
+"Všeobecný návod na používanie softvéru GNU: <http://www.gnu.org/gethelp/>\n"
+
+#: lib/xalloc-die.c:34
+msgid "memory exhausted"
+msgstr "vyčerpaná pamäť"
+
+#, fuzzy
+#~ msgid "%s home page: <https://www.gnu.org/software/%s/>\n"
+#~ msgstr "Domovská stránka %s: <http://www.gnu.org/software/%s/>\n"
+
+#~ msgid "%s: option '--%s' doesn't allow an argument\n"
+#~ msgstr "%s: voľba '--%s' nepovoľuje argument\n"
+
+#~ msgid "%s: unrecognized option '--%s'\n"
+#~ msgstr "%s: neznáma voľba '--%s'\n"
+
+#~ msgid "%s: option '-W %s' is ambiguous\n"
+#~ msgstr "%s: voľba '-W %s' je nejasná\n"
+
+#~ msgid "%s: option '-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: voľba '-W %s' nepovoľuje argument\n"
+
+#~ msgid "%s: option '-W %s' requires an argument\n"
+#~ msgstr "%s: voľba '-W %s' vyžaduje argument\n"
+
+#~ msgid ""
+#~ "  -h, --help          display this help and exit\n"
+#~ "  -v, --version       display version information and exit\n"
+#~ msgstr ""
+#~ "  -h, --help          zobraziť túto pomoc a skončiť\n"
+#~ "  -v, --version       zobraziť informácie o verzii a skončiť\n"

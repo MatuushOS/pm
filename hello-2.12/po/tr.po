@@ -1,0 +1,384 @@
+# Turkish translations for hello messages.
+# Copyright (C) 2007 Free Software Foundation, Inc.
+#
+# This file is distributed under the same license as the hello package.
+# Nilgün Belma Bugüner <nilgun@buguner.name.tr>, 2001, ..., 2007.
+# Volkan Gezer <vlkngzr@gmail.com>, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: hello 2.8\n"
+"Report-Msgid-Bugs-To: bug-hello@gnu.org\n"
+"POT-Creation-Date: 2022-01-31 18:57+0000\n"
+"PO-Revision-Date: 2013-03-17 18:25+0100\n"
+"Last-Translator: Volkan Gezer <vlkngzr@gmail.com>\n"
+"Language-Team: Turkish <gnu-tr-u12a@lists.sourceforge.net>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Bugs: Report translation errors to the Language-Team address.\n"
+"X-Generator: Lokalize 1.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:41
+msgid "Karl Berry"
+msgstr ""
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:42
+msgid "Sami Kerola"
+msgstr ""
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:43
+msgid "Jim Meyering"
+msgstr ""
+
+#. This is a proper name. See the gettext manual, section Names.
+#: src/hello.c:44
+msgid "Reuben Thomas"
+msgstr ""
+
+#. TRANSLATORS: --help output 1 (synopsis)
+#. no-wrap
+#: src/hello.c:55
+#, c-format
+msgid "Usage: %s [OPTION]...\n"
+msgstr "Kullanımı: %s [SEÇENEK]...\n"
+
+#. TRANSLATORS: --help output 2 (brief description)
+#. no-wrap
+#: src/hello.c:58
+msgid "Print a friendly, customizable greeting.\n"
+msgstr "Dost canlısı, özelleştirilebilir bir karşılama iletisi basar.\n"
+
+#. TRANSLATORS: --help output 3: options
+#. no-wrap
+#: src/hello.c:62
+msgid "  -t, --traditional       use traditional greeting\n"
+msgstr ""
+
+#: src/hello.c:63
+msgid "  -g, --greeting=TEXT     use TEXT as the greeting message\n"
+msgstr ""
+
+#: src/hello.c:65
+msgid "      --help     display this help and exit\n"
+msgstr ""
+
+#: src/hello.c:66
+msgid "      --version  output version information and exit\n"
+msgstr ""
+
+#. TRANSLATORS: Replace LANG_CODE in this URL with your language code
+#. <https://translationproject.org/team/LANG_CODE.html> to form one of
+#. the URLs at https://translationproject.org/team/.  Otherwise, replace
+#. the entire URL with your translation team's email address.
+#: src/hello.c:76
+#, c-format
+msgid "Report %s translation bugs to <https://translationproject.org/team/>\n"
+msgstr ""
+
+#: src/hello.c:112
+#, fuzzy
+msgid "hello, world"
+msgstr "merhaba, dünya\n"
+
+#: src/hello.c:123
+#, fuzzy
+msgid "extra operand"
+msgstr "%s: fazladan terim: %s\n"
+
+#: src/hello.c:149
+msgid "Hello, world!"
+msgstr "Merhaba, dünya!"
+
+#: src/hello.c:163
+#, c-format
+msgid "conversion to a multibyte string failed"
+msgstr ""
+
+#: src/system.h:57
+#, fuzzy, c-format
+#| msgid "Try `%s --help' for more information.\n"
+msgid "Try '%s --help' for more information.\n"
+msgstr "Daha fazla bilgi için `%s --help' yazın.\n"
+
+#: lib/error.c:195
+msgid "Unknown system error"
+msgstr "Bilinmeyen sistem hatası"
+
+#: lib/getopt.c:278
+#, fuzzy, c-format
+msgid "%s: option '%s%s' is ambiguous\n"
+msgstr "%s: '-W %s' seçeneği belirsiz\n"
+
+#: lib/getopt.c:284
+#, fuzzy, c-format
+#| msgid "%s: option '%s' is ambiguous; possibilities:"
+msgid "%s: option '%s%s' is ambiguous; possibilities:"
+msgstr "%s: `%s' seçeneği belirsiz; mümkün seçenekler:"
+
+#: lib/getopt.c:319
+#, fuzzy, c-format
+#| msgid "%s: unrecognized option '%c%s'\n"
+msgid "%s: unrecognized option '%s%s'\n"
+msgstr "%s: tanınmayan seçenek `%c%s'\n"
+
+#: lib/getopt.c:345
+#, fuzzy, c-format
+#| msgid "%s: option '%c%s' doesn't allow an argument\n"
+msgid "%s: option '%s%s' doesn't allow an argument\n"
+msgstr "%s: `%c%s' argümansız kullanılır\n"
+
+#: lib/getopt.c:360
+#, fuzzy, c-format
+#| msgid "%s: option '--%s' requires an argument\n"
+msgid "%s: option '%s%s' requires an argument\n"
+msgstr "%s: `%s' seçeneği bir argümanla kullanılır\n"
+
+#: lib/getopt.c:621
+#, c-format
+msgid "%s: invalid option -- '%c'\n"
+msgstr "%s: geçersiz seçenek -- '%c'\n"
+
+#: lib/getopt.c:636 lib/getopt.c:682
+#, c-format
+msgid "%s: option requires an argument -- '%c'\n"
+msgstr "%s: seçenek bir argümanla kullanılır -- '%c'\n"
+
+#: lib/closeout.c:122
+msgid "write error"
+msgstr "yazma hatası"
+
+#. TRANSLATORS:
+#. Get translations for open and closing quotation marks.
+#. The message catalog should translate "`" to a left
+#. quotation mark suitable for the locale, and similarly for
+#. "'".  For example, a French Unicode local should translate
+#. these to U+00AB (LEFT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), and U+00BB (RIGHT-POINTING DOUBLE ANGLE
+#. QUOTATION MARK), respectively.
+#.
+#. If the catalog has no translation, we will try to
+#. use Unicode U+2018 (LEFT SINGLE QUOTATION MARK) and
+#. Unicode U+2019 (RIGHT SINGLE QUOTATION MARK).  If the
+#. current locale is not Unicode, locale_quoting_style
+#. will quote 'like this', and clocale_quoting_style will
+#. quote "like this".  You should always include translations
+#. for "`" and "'" even if U+2018 and U+2019 are appropriate
+#. for your locale.
+#.
+#. If you don't know what to put here, please see
+#. <https://en.wikipedia.org/wiki/Quotation_marks_in_other_languages>
+#. and use glyphs suitable for your language.
+#: lib/quotearg.c:355
+msgid "`"
+msgstr "`"
+
+#: lib/quotearg.c:356
+msgid "'"
+msgstr "'"
+
+#: lib/version-etc.c:73
+#, c-format
+msgid "Packaged by %s (%s)\n"
+msgstr ""
+
+#: lib/version-etc.c:76
+#, c-format
+msgid "Packaged by %s\n"
+msgstr ""
+
+#. TRANSLATORS: Translate "(C)" to the copyright symbol
+#. (C-in-a-circle), if this symbol is available in the user's
+#. locale.  Otherwise, do not translate "(C)"; leave it as-is.
+#: lib/version-etc.c:83
+msgid "(C)"
+msgstr ""
+
+#. TRANSLATORS: The %s placeholder is the web address of the GPL license.
+#: lib/version-etc.c:88
+#, fuzzy, c-format
+msgid ""
+"License GPLv3+: GNU GPL version 3 or later <%s>.\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+msgstr ""
+"Telif Hakkı © %s Free Software Foundation, Inc.\n"
+"Lisans: GNU GPL v3+ <http://www.gnu.org/licenses/gpl.html>\n"
+"Bu bir özgür yazılım olduğundan yasaların izin verdiği ölçüde\n"
+"herhangi bir garanti verilmemektedir.\n"
+
+#. TRANSLATORS: %s denotes an author name.
+#: lib/version-etc.c:105
+#, c-format
+msgid "Written by %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: lib/version-etc.c:109
+#, c-format
+msgid "Written by %s and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#: lib/version-etc.c:113
+#, c-format
+msgid "Written by %s, %s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:120
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:127
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:134
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:142
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:150
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:159
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, and %s.\n"
+msgstr ""
+
+#. TRANSLATORS: Each %s denotes an author name.
+#. You can use line breaks, estimating that each author name occupies
+#. ca. 16 screen columns and that a screen line has ca. 80 columns.
+#: lib/version-etc.c:170
+#, c-format
+msgid ""
+"Written by %s, %s, %s,\n"
+"%s, %s, %s, %s,\n"
+"%s, %s, and others.\n"
+msgstr ""
+
+#. TRANSLATORS: The placeholder indicates the bug-reporting address
+#. for this package.  Please add _another line_ saying
+#. "Report translation bugs to <...>\n" with the address for translation
+#. bugs (typically your translation team's web or email address).
+#: lib/version-etc.c:249
+#, c-format
+msgid "Report bugs to: %s\n"
+msgstr "Hataları şuraya bildirin: %s\n"
+
+#: lib/version-etc.c:251
+#, c-format
+msgid "Report %s bugs to: %s\n"
+msgstr "%s hatalarını şuraya bildirin: %s\n"
+
+#: lib/version-etc.c:255 lib/version-etc.c:257
+#, c-format
+msgid "%s home page: <%s>\n"
+msgstr "%s ana sayfa: <%s>\n"
+
+#: lib/version-etc.c:260
+#, fuzzy, c-format
+msgid "General help using GNU software: <%s>\n"
+msgstr ""
+"GNU yazılımı kullanımı hakkında genel yardım: <http://www.gnu.org/gethelp/>\n"
+
+#: lib/xalloc-die.c:34
+msgid "memory exhausted"
+msgstr "bellek tükendi"
+
+#, fuzzy
+#~ msgid "%s home page: <https://www.gnu.org/software/%s/>\n"
+#~ msgstr "%s ana sayfa: <http://www.gnu.org/software/%s/>\n"
+
+#~ msgid "%s: option '--%s' doesn't allow an argument\n"
+#~ msgstr "%s: `--%s' seçeneği argümansız kullanılır\n"
+
+#~ msgid "%s: unrecognized option '--%s'\n"
+#~ msgstr "%s: tanınmayan seçenek `--%s'\n"
+
+#~ msgid "%s: option '-W %s' is ambiguous\n"
+#~ msgstr "%s: '-W %s' seçeneği belirsiz\n"
+
+#~ msgid "%s: option '-W %s' doesn't allow an argument\n"
+#~ msgstr "%s: '-W %s' seçeneği argümansız kullanılır\n"
+
+#~ msgid "%s: option '-W %s' requires an argument\n"
+#~ msgstr "%s: '-W %s' seçeneği bir argümanla kullanılır\n"
+
+#~ msgid ""
+#~ "+---------------+\n"
+#~ "| Hello, world! |\n"
+#~ "+---------------+\n"
+#~ msgstr ""
+#~ "┌─────────────────┐\n"
+#~ "│ Merhaba, dünya! │\n"
+#~ "└─────────────────┘\n"
+#~ "Not:\n"
+#~ "Bu iletiyi çizgiler içinde göremiyorsanız bir de\n"
+#~ "export LANG=\"tr_TR.UTF-8\"\n"
+#~ "unicode_start\n"
+#~ "ile deneyin.\n"
+
+#~ msgid ""
+#~ "  -h, --help          display this help and exit\n"
+#~ "  -v, --version       display version information and exit\n"
+#~ msgstr ""
+#~ "  -h, --help              bu iletileri gösterir ve çıkar\n"
+#~ "  -v, --version           sürümü gösterir ve çıkar\n"
+
+#~ msgid ""
+#~ "  -t, --traditional       use traditional greeting format\n"
+#~ "  -n, --next-generation   use next-generation greeting format\n"
+#~ "  -g, --greeting=TEXT     use TEXT as the greeting message\n"
+#~ msgstr ""
+#~ "  -t, --traditional       geleneksel karşılama biçemi kullanılır\n"
+#~ "  -n, --next-generation   yeni nesil karşılama biçemi kullanılır\n"
+#~ "  -g, --greeting=METİN    karşılama iletisi olarak METİN kullanılır\n"
+
+#~ msgid "%s: illegal option -- %c\n"
+#~ msgstr "%s: kuraldışı seçenek -- %c\n"
