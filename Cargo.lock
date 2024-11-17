@@ -719,6 +719,7 @@ dependencies = [
  "fetch-data",
  "is-root",
  "log",
+ "regex",
  "rhai",
  "rhai-autodocs",
 ]

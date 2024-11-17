@@ -8,5 +8,6 @@ colog = "1.3.0"
 fetch-data = "0.2.0"
 is-root = "0.1.3"
 log = "0.4.22"
+regex = "1.11.1"
 rhai = { version = "1.20.0" , features = ["only_i32", "no_custom_syntax"]}
 rhai-autodocs = "0.7.0"

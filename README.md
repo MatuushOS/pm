@@ -22,6 +22,6 @@ You can just clone this repository, run `cargo build --workspace --release` and 
  |  
 [*] generate [LOC]      Generate example configuration file
 [*] docs                Generate documentation. Make sure you pipe it to tee or to redirect the output to Markdown file
-[*] build [PKG]         Build file
+[*] install [PKG]       Install package
 
 ```

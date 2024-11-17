@@ -1,5 +1,6 @@
 use is_root::is_root;
 use log::{error, info};
+use regex::Regex;
 use std::env::home_dir;
 use std::fs::{rename, DirBuilder};
 use std::os::unix::fs::symlink;
@@ -39,7 +40,11 @@ pub fn install(pkg_name: &str) {
                 Path::new(&temp_dir()).join(pkg_name),
                 format!("{}/{pkg_name}", path.to_str().unwrap()),
             )
-            .unwrap()
+            .unwrap();
+            set_var(
+                "PATH",
+                format!("{}/{pkg_name}:$PATH", path.to_str().unwrap()),
+            )
         }
     }
     info!("DONE!")
@@ -86,7 +91,12 @@ pub fn download_extract(
             .args(["-xvf", p.to_str().unwrap()])
             .status()
             .unwrap();
-        std::env::set_current_dir(file_name).unwrap();
+        std::env::set_current_dir(
+            Regex::new(format!(r"{file_name}\s*(.+?)").as_str())
+                .unwrap()
+                .as_str(),
+        )
+        .unwrap();
     } else if ext == "zip" {
         Command::new("unzip")
             .arg(p.to_str().unwrap())

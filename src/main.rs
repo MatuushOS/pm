@@ -1,9 +1,10 @@
 mod functions;
 
+use is_root::is_root;
 use log::{error, info};
 use rhai::Engine;
 use rhai_autodocs::export::SectionFormat;
-use std::env::temp_dir;
+use std::env::{home_dir, temp_dir};
 use std::path::Path;
 use std::{env::args, process::exit};
 
@@ -53,13 +54,40 @@ fn main() {
                     });
             }
         }
+        "remove" => {
+            for remove in 2..=arg.len() - 1 {
+                match is_root() {
+                    true => {
+                        for dir in [
+                            Path::new(
+                                format!(".mtos/pkgs/{}", arg[remove]).as_str(),
+                            ),
+                            &*Path::new(&temp_dir()).join(&arg[remove]),
+                        ] {
+                            std::fs::remove_dir_all(dir).unwrap()
+                        }
+                    }
+                    false => {
+                        for dir in [
+                            Path::new(home_dir().unwrap().as_path())
+                                .join(format!(".mtos/pkgs/{}", arg[remove])),
+                            Path::new(&temp_dir()).join(&arg[remove]),
+                        ] {
+                            std::fs::remove_dir_all(dir).unwrap()
+                        }
+                    }
+                }
+                info!("Removed {}", arg[remove])
+            }
+        }
         "help" | _ => {
             info!("Package manager");
             info!("Usage: {} OPTIONS [ARGUMENTS]\n", arg[0]);
             info!("Commands:\n");
             info!("generate [LOC]\tGenerate example configuration file");
             info!("docs\t\tGenerate documentation. Make sure you pipe it to tee or to redirect the output to Markdown file");
-            info!("install [PKG]\t\tBuild file")
+            info!("install [PKG]\t\tInstall package");
+            info!("remove [PKG]\t\tRemove package")
         }
     }
 }
