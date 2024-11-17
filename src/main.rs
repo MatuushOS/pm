@@ -4,9 +4,12 @@ use is_root::is_root;
 use log::{error, info};
 use rhai::Engine;
 use rhai_autodocs::export::SectionFormat;
-use std::env::{home_dir, temp_dir};
-use std::path::Path;
-use std::{env::args, process::exit};
+use std::{
+    env::args,
+    env::{home_dir, temp_dir},
+    path::Path,
+    process::exit,
+};
 
 fn main() {
     colog::init();
@@ -19,6 +22,9 @@ fn main() {
         .register_fn("unset_env", functions::unset_env)
         .register_fn("install", functions::install)
         .register_fn("step", functions::step);
+    if arg.len() == 1 {
+        info!("Type {} help for help", arg[0])
+    }
     match arg[1].as_str() {
         "generate" => {
             let generated = "let name = ''\nlet desc = ''\nlet version = [0, 0, 0]\n# download";
@@ -46,6 +52,13 @@ fn main() {
                 exit(0);
             }
             for pkg in 2..=arg.len() - 1 {
+                if Path::new(&home_dir().unwrap()).join(format!(".mtos/pkgs/{}", arg[pkg])).exists() && Path::new(&temp_dir()).join(format!(".mtos/pkgs/{}", arg[pkg])).exists()  {
+                    info!("Use {} remove if you want to remove the package", arg[0]);
+                    exit(1);
+                } else if  Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str()).exists() && Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str()).exists() {
+                    info!("Use {} remove if you want to remove the package", arg[0]);
+                    exit(1);
+                }
                 info!("Making package {}", arg[pkg]);
                 parse
                     .eval_file::<()>(format!("{}.mt", arg[pkg]).into())
@@ -73,21 +86,31 @@ fn main() {
                                 .join(format!(".mtos/pkgs/{}", arg[remove])),
                             Path::new(&temp_dir()).join(&arg[remove]),
                         ] {
-                            std::fs::remove_dir_all(dir).unwrap()
+                            std::fs::remove_dir_all(&dir).unwrap();
+                            info!(
+                                "Removed {} ({})",
+                                arg[remove],
+                                dir.display()
+                            );
                         }
                     }
                 }
                 info!("Removed {}", arg[remove])
             }
-        }
-        "help" | _ => {
+        },
+        "help" => {
             info!("Package manager");
-            info!("Usage: {} OPTIONS [ARGUMENTS]\n", arg[0]);
+            info!("Usage: {} OPTIONS [ARGUMENTS].\n", arg[0]);
             info!("Commands:\n");
-            info!("generate [LOC]\tGenerate example configuration file");
-            info!("docs\t\tGenerate documentation. Make sure you pipe it to tee or to redirect the output to Markdown file");
-            info!("install [PKG]\t\tInstall package");
-            info!("remove [PKG]\t\tRemove package")
+            info!("generate [LOC]\tGenerate example configuration file.");
+            info!("docs\t\tGenerate documentation for the build files. \
+            \n\t\t\t└── Make sure you pipe it to tee or to redirect the output to Markdown file.");
+            info!("install [PKG]\tInstall package.");
+            info!("remove [PKG]\tRemove package.");
+            info!("------------------------------\nFor listing packages, type ls ~/.mtos/pkgs or ls /mtos/pkgs if you're root.")
+        }
+        _ => {
+            info!("Run {} help for help", arg[0])
         }
     }
 }

@@ -1,8 +1,9 @@
 use is_root::is_root;
-use log::{error, info};
+use log::{error, info, trace};
 use regex::Regex;
 use std::env::home_dir;
-use std::fs::{rename, DirBuilder};
+use std::fmt::format;
+use std::fs::{read_dir, rename, DirBuilder};
 use std::os::unix::fs::symlink;
 use std::{
     env::temp_dir,
@@ -25,7 +26,21 @@ pub fn install(pkg_name: &str) {
                 Path::new(&temp_dir()).join(pkg_name),
                 format!("/mtos/pkgs/{pkg_name}"),
             )
-            .unwrap()
+            .unwrap();
+
+            info!("Cleaning leftovers");
+            for leftover in read_dir(temp_dir()).unwrap() {
+                let left = leftover.unwrap();
+                let x = Regex::new(
+                    format!(r"{}-*", left.path().to_str().unwrap()).as_str(),
+                )
+                .unwrap();
+                let path = Path::new(x.as_str());
+                if path.exists() {
+                    trace!("Cleaning {}", path.display());
+                    std::fs::remove_dir_all(path).unwrap()
+                }
+            }
         }
         false => {
             let path = Path::new(&home_dir().unwrap()).join(".mtos/pkgs");
@@ -44,7 +59,20 @@ pub fn install(pkg_name: &str) {
             set_var(
                 "PATH",
                 format!("{}/{pkg_name}:$PATH", path.to_str().unwrap()),
-            )
+            );
+            info!("Cleaning leftovers");
+            for leftover in read_dir(temp_dir()).unwrap() {
+                let left = leftover.unwrap();
+                let x = Regex::new(
+                    format!(r"{}-*", left.path().to_str().unwrap()).as_str(),
+                )
+                .unwrap();
+                let path = Path::new(x.as_str());
+                if path.exists() {
+                    trace!("Cleaning {}", path.display());
+                    std::fs::remove_dir_all(path).unwrap()
+                }
+            }
         }
     }
     info!("DONE!")
@@ -79,24 +107,19 @@ pub fn download_extract(
 ) {
     info!("Downloading {name} from {addr}");
     let p = Path::new(temp_dir().as_path()).join(format!("{file_name}{ext}"));
-    fetch_data::download(&addr, &p).unwrap();
+    fetch_data::download(addr, &p).unwrap();
     let hash = fetch_data::hash_download(addr, &p).unwrap();
     if hash != sha256 {
         error!("FILE IS UNSAFE TO USE, STOPPING THE OPERATION NOW!!\nExpected {hash}, got {sha256}");
         exit(1);
     }
     std::env::set_current_dir(temp_dir()).unwrap();
-    if ext.contains("tar") {
+    if ext.contains("tar") || ext.contains(".tgz") {
         Command::new("tar")
             .args(["-xvf", p.to_str().unwrap()])
             .status()
             .unwrap();
-        std::env::set_current_dir(
-            Regex::new(format!(r"{file_name}\s*(.+?)").as_str())
-                .unwrap()
-                .as_str(),
-        )
-        .unwrap();
+        std::env::set_current_dir(file_name).unwrap();
     } else if ext == "zip" {
         Command::new("unzip")
             .arg(p.to_str().unwrap())
@@ -118,7 +141,7 @@ pub fn download(
 ) {
     info!("Downloading {name} from {addr}");
     let p = Path::new(temp_dir().as_path()).join(format!("{file_name}{ext}"));
-    fetch_data::download(&addr, &p).unwrap();
+    fetch_data::download(addr, &p).unwrap();
     if fetch_data::hash_download(addr, &p).unwrap() != sha256 {
         error!("FILE IS UNSAFE TO USE, STOPPING THE OPERATION NOW!!");
         exit(1);
