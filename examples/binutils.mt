@@ -12,4 +12,4 @@ step("Configure Binutils", "./configure", "--prefix=/tmp/pkg \
                                            --enable-default-hash-style=gnu");
 step("Build", "make", "");
 step("Install", "make", "install");
-install(name);
+mkpackage(name);

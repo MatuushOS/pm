@@ -1,16 +1,19 @@
-mod functions;
+pub mod functions;
 
-use is_root::is_root;
 use log::{error, info};
 use rhai::Engine;
-use rhai_autodocs::export::SectionFormat;
 use std::{
     env::args,
     env::{home_dir, temp_dir},
     path::Path,
     process::exit,
 };
+use std::process::Command;
 
+pub fn is_root() -> bool {
+   let user = env!("USER");
+    Command::new("id").args(["-u", user]).status().unwrap().code().unwrap() == 0
+}
 fn main() {
     colog::init();
     let mut parse = Engine::new();
@@ -20,8 +23,9 @@ fn main() {
         .register_fn("download_extract", functions::download_extract)
         .register_fn("set_env", functions::set_env)
         .register_fn("unset_env", functions::unset_env)
-        .register_fn("install", functions::install)
-        .register_fn("step", functions::step);
+        .register_fn("build", functions::install)
+        .register_fn("step", functions::step)
+        .register_fn("mkpackage", functions::mkpackage);
     if arg.len() == 1 {
         info!("Type {} help for help", arg[0])
     }
@@ -32,7 +36,6 @@ fn main() {
         }
         "docs" => {
             let docs = rhai_autodocs::export::options()
-                .format_sections_with(SectionFormat::Tabs)
                 .include_standard_packages(false)
                 .export(&parse)
                 .expect("failed to export documentation");
@@ -52,11 +55,27 @@ fn main() {
                 exit(0);
             }
             for pkg in 2..=arg.len() - 1 {
-                if Path::new(&home_dir().unwrap()).join(format!(".mtos/pkgs/{}", arg[pkg])).exists() && Path::new(&temp_dir()).join(format!(".mtos/pkgs/{}", arg[pkg])).exists()  {
-                    info!("Use {} remove if you want to remove the package", arg[0]);
+                if Path::new(&home_dir().unwrap())
+                    .join(format!(".mtos/pkgs/{}", arg[pkg]))
+                    .exists()
+                    && Path::new(&temp_dir())
+                        .join(format!(".mtos/pkgs/{}", arg[pkg]))
+                        .exists()
+                {
+                    info!(
+                        "Use {} remove if you want to remove the package",
+                        arg[0]
+                    );
                     exit(1);
-                } else if  Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str()).exists() && Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str()).exists() {
-                    info!("Use {} remove if you want to remove the package", arg[0]);
+                } else if Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
+                    .exists()
+                    && Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
+                        .exists()
+                {
+                    info!(
+                        "Use {} remove if you want to remove the package",
+                        arg[0]
+                    );
                     exit(1);
                 }
                 info!("Making package {}", arg[pkg]);
@@ -97,7 +116,7 @@ fn main() {
                 }
                 info!("Removed {}", arg[remove])
             }
-        },
+        }
         "help" => {
             info!("Package manager");
             info!("Usage: {} OPTIONS [ARGUMENTS].\n", arg[0]);
@@ -106,6 +125,7 @@ fn main() {
             info!("docs\t\tGenerate documentation for the build files. \
             \n\t\t\t└── Make sure you pipe it to tee or to redirect the output to Markdown file.");
             info!("install [PKG]\tInstall package.");
+            info!("build [PKG]\tBuild package");
             info!("remove [PKG]\tRemove package.");
             info!("------------------------------\nFor listing packages, type ls ~/.mtos/pkgs or ls /mtos/pkgs if you're root.")
         }

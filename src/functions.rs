@@ -1,16 +1,15 @@
-use is_root::is_root;
 use log::{error, info, trace};
 use regex::Regex;
-use std::env::home_dir;
-use std::fmt::format;
-use std::fs::{read_dir, rename, DirBuilder};
-use std::os::unix::fs::symlink;
 use std::{
+    env::home_dir,
+    fs::{read_dir, rename, DirBuilder},
+    os::unix::fs::symlink,
     env::temp_dir,
     env::{remove_var, set_var},
     path::Path,
-    process::{exit, Command, ExitStatus},
+    process::{exit, Command, ExitStatus}
 };
+use crate::is_root;
 
 /// Installs the package.
 /// Sets the INSTDIR environment variable for easy putting.
@@ -81,6 +80,18 @@ pub fn install(pkg_name: &str) {
 pub fn set_env(env: &str, var: &str) {
     set_var(env, var)
 }
+/// Packages the contents in the pkg directory.
+pub fn mkpackage(name: &str) {
+    let path = Path::new(&temp_dir()).join("pkg");
+    Command::new("tar")
+        .args([
+            "-czvf",
+            format!("{}.pm", name).as_str(),
+            path.to_str().unwrap(),
+        ])
+        .status()
+        .unwrap();
+}
 /// Unsets the variable
 pub fn unset_env(env: &str) {
     remove_var(env)
@@ -98,6 +109,7 @@ pub fn step(name: &str, cmd: &str, args: &str) -> ExitStatus {
 /// Downloads and extracts the target file.
 /// For only downloading or downloading binaries, use `download()` instead.
 /// EXTRACT THE COMPRESSED FILE BEFOREHAND TO SEE IF ANY DIRECTORY CHANGE IS NEEDED.
+/// - if so, use the [`download`] function instead in combination with [`step`].
 pub fn download_extract(
     name: &str,
     file_name: &str,
