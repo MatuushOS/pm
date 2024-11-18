@@ -8,9 +8,9 @@ This is home to `pm`, a package manager that is designed for MatuushOS.
 You can just clone this repository, run `cargo build --workspace --release` and copy the contents of `target/release` directory to system path.
 
 ## To do list
-- [x] Make installing packages work
-  - [x] Windows
-  - [x] Unix like OSes (macOS, Linux, BSDs)
+- [x] Make installing packages work.
+- [ ] Add more functions for configuring MatuushOS.
+- [ ] Integrate with [mtinit](https://github.com/MatuushOS/mtinit).
 
 ## `pm` options
 
@@ -27,6 +27,4 @@ You can just clone this repository, run `cargo build --workspace --release` and 
 [*] remove [PKG]        Remove package.
 [*] ------------------------------
  |  For listing packages, type ls ~/.mtos/pkgs or ls /mtos/pkgs if you're root.
-
-
 ```
