@@ -12,7 +12,7 @@ use std::process::Command;
 
 pub fn is_root() -> bool {
    let user = env!("USER");
-    Command::new("id").args(["-u", user]).status().unwrap().code().unwrap() == 0
+    Command::new("id").args(["-u", user]).status().unwrap().code().unwrap() == 1000
 }
 fn main() {
     colog::init();
@@ -23,7 +23,7 @@ fn main() {
         .register_fn("download_extract", functions::download_extract)
         .register_fn("set_env", functions::set_env)
         .register_fn("unset_env", functions::unset_env)
-        .register_fn("build", functions::install)
+        .register_fn("install", functions::install)
         .register_fn("step", functions::step)
         .register_fn("mkpackage", functions::mkpackage);
     if arg.len() == 1 {

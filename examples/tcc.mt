@@ -9,4 +9,4 @@ step("Configure TCC", "./configure", "");
 step("Clean", "make", "clean");
 step("Build TCC", "make", "");
 step("Install TCC", "make", "install DESTDIR=../pkg");
-package(name);
+mkpackage(name);

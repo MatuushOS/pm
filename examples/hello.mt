@@ -10,4 +10,4 @@ step("Configure the package", "./configure", "");
 step("Clean", "make", "clean");
 step("Build", "make", "");
 step("Install", "make", "install DESTDIR=../pkg");
-install(name);
+mkpackage(name);

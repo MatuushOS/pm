@@ -19,3 +19,17 @@ jobs:
             - uses: auguwu/clippy-action@1.4.0
               with:
                   token: ${{secrets.GITHUB_TOKEN}}
+    test_examples:
+        name: Test examples
+        runs-on: ubuntu-latest
+        container:
+            image: alpine:latest
+        steps:
+            - name: Prepare the environment
+              run: apk update; apk add alpine-sdk clang cmake pkgconf bash curl
+            - uses: actions/checkout@v3
+            - uses: dtolnay/rust-toolchain@stable
+              with:
+                  targets: x86_64-unknown-linux-musl
+            - name: Run the examples
+              run: cargo test

@@ -9,6 +9,7 @@ use std::{
     path::Path,
     process::{exit, Command, ExitStatus}
 };
+use std::fs::remove_dir_all;
 use crate::is_root;
 
 /// Installs the package.
@@ -44,9 +45,10 @@ pub fn install(pkg_name: &str) {
         false => {
             let path = Path::new(&home_dir().unwrap()).join(".mtos/pkgs");
             DirBuilder::new().recursive(true).create(&path).unwrap();
-
+            
+            let buf = Path::new(&temp_dir()).join("pkg");
             rename(
-                Path::new(&temp_dir()).join("pkg").to_str().unwrap(),
+                buf.to_str().unwrap(),
                 Path::new(&temp_dir()).join(pkg_name),
             )
             .unwrap();
@@ -71,6 +73,9 @@ pub fn install(pkg_name: &str) {
                     trace!("Cleaning {}", path.display());
                     std::fs::remove_dir_all(path).unwrap()
                 }
+            }
+            if buf.exists() {
+                remove_dir_all(buf).unwrap()
             }
         }
     }
