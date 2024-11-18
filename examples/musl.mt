@@ -4,6 +4,6 @@ download_extract("MUSL", "musl-1.2.5", ".tar.gz", "https://musl.libc.org/release
 set_env("CC", "clang -static");
 step("Configure", "./configure",  "--prefix=../pkg");
 step("Build", "make", "");
-step("Install", "make", "install DESTDIR=../pkg TARGET=x86_64-linux-musl");
+step("Install", "make", "install TARGET=x86_64-linux-musl");
 install(name);
 unset_env("CC");

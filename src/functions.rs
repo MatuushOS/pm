@@ -1,16 +1,16 @@
+use crate::is_root;
 use log::{error, info, trace};
 use regex::Regex;
+use std::fs::remove_dir_all;
 use std::{
     env::home_dir,
-    fs::{read_dir, rename, DirBuilder},
-    os::unix::fs::symlink,
     env::temp_dir,
     env::{remove_var, set_var},
+    fs::{read_dir, rename, DirBuilder},
+    os::unix::fs::symlink,
     path::Path,
-    process::{exit, Command, ExitStatus}
+    process::{exit, Command, ExitStatus},
 };
-use std::fs::remove_dir_all;
-use crate::is_root;
 
 /// Installs the package.
 /// Sets the INSTDIR environment variable for easy putting.
@@ -45,7 +45,7 @@ pub fn install(pkg_name: &str) {
         false => {
             let path = Path::new(&home_dir().unwrap()).join(".mtos/pkgs");
             DirBuilder::new().recursive(true).create(&path).unwrap();
-            
+
             let buf = Path::new(&temp_dir()).join("pkg");
             rename(
                 buf.to_str().unwrap(),
@@ -91,7 +91,7 @@ pub fn mkpackage(name: &str) {
     Command::new("tar")
         .args([
             "-czvf",
-            format!("{}.pm", name).as_str(),
+            format!("./{}.pm", name).as_str(),
             path.to_str().unwrap(),
         ])
         .status()

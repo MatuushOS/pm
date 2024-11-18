@@ -1,18 +1,26 @@
 pub mod functions;
 
 use log::{error, info};
+use regex::Regex;
 use rhai::Engine;
+use std::process::Command;
 use std::{
     env::args,
     env::{home_dir, temp_dir},
     path::Path,
     process::exit,
 };
-use std::process::Command;
+use std::env::var;
 
 pub fn is_root() -> bool {
-   let user = env!("USER");
-    Command::new("id").args(["-u", user]).status().unwrap().code().unwrap() == 1000
+    let user = var("USER");
+    Command::new("id")
+        .args(["-u", user.unwrap().as_str()])
+        .status()
+        .unwrap()
+        .code()
+        .unwrap()
+        == 1000
 }
 fn main() {
     colog::init();
@@ -114,6 +122,14 @@ fn main() {
                         }
                     }
                 }
+                std::fs::remove_dir(
+                    Path::new(&temp_dir()).join(
+                        Regex::new(format!(r"{}*", arg[remove]).as_str())
+                            .unwrap()
+                            .as_str(),
+                    ),
+                )
+                .unwrap();
                 info!("Removed {}", arg[remove])
             }
         }
