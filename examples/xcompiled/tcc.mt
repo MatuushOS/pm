@@ -10,3 +10,4 @@ step("Clean", "make", "clean");
 step("Build TCC", "make", "");
 step("Install TCC", "make", "install DESTDIR=../pkg");
 mkpackage(name);
+step("Relocate the final package", "mv", name + ".pm ~/.mtos/" + name + ".pm");

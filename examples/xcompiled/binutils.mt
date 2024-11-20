@@ -13,3 +13,4 @@ step("Configure Binutils", "./configure", "--prefix=/tmp/pkg \
 step("Build", "make", "");
 step("Install", "make", "install");
 mkpackage(name);
+step("Relocate the final package", "mv", name + ".pm ~/.mtos/" + name + ".pm");

@@ -1,16 +1,15 @@
 pub mod functions;
 
+use async_std::path::Path;
 use log::{error, info};
 use regex::Regex;
 use rhai::Engine;
-use std::process::Command;
 use std::{
-    env::args,
-    env::{home_dir, temp_dir},
-    path::Path,
-    process::exit,
+    env::{args, temp_dir, var},
+    process::{exit, Command},
 };
-use std::env::var;
+use tokio::main;
+use xdg_home::home_dir;
 
 pub fn is_root() -> bool {
     let user = var("USER");
@@ -22,7 +21,8 @@ pub fn is_root() -> bool {
         .unwrap()
         == 1000
 }
-fn main() {
+#[main]
+async fn main() {
     colog::init();
     let mut parse = Engine::new();
     let arg: Vec<String> = args().collect();
@@ -66,9 +66,11 @@ fn main() {
                 if Path::new(&home_dir().unwrap())
                     .join(format!(".mtos/pkgs/{}", arg[pkg]))
                     .exists()
+                    .await
                     && Path::new(&temp_dir())
                         .join(format!(".mtos/pkgs/{}", arg[pkg]))
                         .exists()
+                        .await
                 {
                     info!(
                         "Use {} remove if you want to remove the package",
@@ -77,8 +79,10 @@ fn main() {
                     exit(1);
                 } else if Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
                     .exists()
+                    .await
                     && Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
                         .exists()
+                        .await
                 {
                     info!(
                         "Use {} remove if you want to remove the package",

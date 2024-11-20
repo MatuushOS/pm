@@ -5,5 +5,6 @@ set_env("CC", "clang -static");
 step("Configure", "./configure",  "--prefix=../pkg");
 step("Build", "make", "");
 step("Install", "make", "install TARGET=x86_64-linux-musl");
-install(name);
+mkpackage(name);
 unset_env("CC");
+step("Relocate the final package", "mv", name + ".pm ~/.mtos/" + name + ".pm");

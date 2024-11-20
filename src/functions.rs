@@ -1,16 +1,14 @@
 use crate::is_root;
 use log::{error, info, trace};
 use regex::Regex;
-use std::fs::remove_dir_all;
 use std::{
-    env::home_dir,
-    env::temp_dir,
-    env::{remove_var, set_var},
-    fs::{read_dir, rename, DirBuilder},
+    env::{remove_var, set_current_dir, set_var, temp_dir},
+    fs::{read_dir, remove_dir_all, rename, DirBuilder},
     os::unix::fs::symlink,
     path::Path,
     process::{exit, Command, ExitStatus},
 };
+use xdg_home::home_dir;
 
 /// Installs the package.
 /// Sets the INSTDIR environment variable for easy putting.
@@ -38,7 +36,7 @@ pub fn install(pkg_name: &str) {
                 let path = Path::new(x.as_str());
                 if path.exists() {
                     trace!("Cleaning {}", path.display());
-                    std::fs::remove_dir_all(path).unwrap()
+                    remove_dir_all(path).unwrap()
                 }
             }
         }
@@ -71,7 +69,7 @@ pub fn install(pkg_name: &str) {
                 let path = Path::new(x.as_str());
                 if path.exists() {
                     trace!("Cleaning {}", path.display());
-                    std::fs::remove_dir_all(path).unwrap()
+                    remove_dir_all(path).unwrap()
                 }
             }
             if buf.exists() {
@@ -88,12 +86,9 @@ pub fn set_env(env: &str, var: &str) {
 /// Packages the contents in the pkg directory.
 pub fn mkpackage(name: &str) {
     let path = Path::new(&temp_dir()).join("pkg");
+    let archive = format!("./{}.pm", name);
     Command::new("tar")
-        .args([
-            "-czvf",
-            format!("./{}.pm", name).as_str(),
-            path.to_str().unwrap(),
-        ])
+        .args(["-czvf", archive.as_str(), path.to_str().unwrap()])
         .status()
         .unwrap();
 }
@@ -130,19 +125,19 @@ pub fn download_extract(
         error!("FILE IS UNSAFE TO USE, STOPPING THE OPERATION NOW!!\nExpected {hash}, got {sha256}");
         exit(1);
     }
-    std::env::set_current_dir(temp_dir()).unwrap();
+    set_current_dir(temp_dir()).unwrap();
     if ext.contains("tar") || ext.contains(".tgz") {
         Command::new("tar")
             .args(["-xvf", p.to_str().unwrap()])
             .status()
             .unwrap();
-        std::env::set_current_dir(file_name).unwrap();
+        set_current_dir(file_name).unwrap();
     } else if ext == "zip" {
         Command::new("unzip")
             .arg(p.to_str().unwrap())
             .status()
             .unwrap();
-        std::env::set_current_dir(file_name).unwrap();
+        set_current_dir(file_name).unwrap();
     } else {
         error!("Extension not supported\nGot {ext}");
         exit(1);
