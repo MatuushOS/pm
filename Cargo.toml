@@ -11,8 +11,6 @@ rhai = { version = "1.20.0" , features = ["only_i32", "no_custom_syntax", "no_cl
 rhai-autodocs = "0.7.0"
 regex = "1.11.1"
 xdg-home = "1.3.0"
-tokio = { version = "1.41.1", features = ["macros", "rt-multi-thread"] }
-async-std = "1.13.0"
 
 [profile.release]
 panic = "abort"

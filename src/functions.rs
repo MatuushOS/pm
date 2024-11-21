@@ -8,8 +8,12 @@ use std::{
     path::Path,
     process::{exit, Command, ExitStatus},
 };
+use std::fs::create_dir;
 use xdg_home::home_dir;
-
+pub fn mkdir_chdir(dir: &str) {
+    create_dir(dir).unwrap();
+    set_current_dir(dir).unwrap()
+}
 /// Installs the package.
 /// Sets the INSTDIR environment variable for easy putting.
 pub fn install(pkg_name: &str) {

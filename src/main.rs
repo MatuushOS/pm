@@ -1,14 +1,13 @@
 pub mod functions;
 
-use async_std::path::Path;
+use std::{
+    path::Path,
+    env::{args, temp_dir, var},
+    process::{exit, Command}
+};
 use log::{error, info};
 use regex::Regex;
 use rhai::Engine;
-use std::{
-    env::{args, temp_dir, var},
-    process::{exit, Command},
-};
-use tokio::main;
 use xdg_home::home_dir;
 
 pub fn is_root() -> bool {
@@ -21,8 +20,7 @@ pub fn is_root() -> bool {
         .unwrap()
         == 1000
 }
-#[main]
-async fn main() {
+fn main() {
     colog::init();
     let mut parse = Engine::new();
     let arg: Vec<String> = args().collect();
@@ -33,7 +31,7 @@ async fn main() {
         .register_fn("unset_env", functions::unset_env)
         .register_fn("install", functions::install)
         .register_fn("step", functions::step)
-        .register_fn("mkpackage", functions::mkpackage);
+        .register_fn("mkpackage", functions::mkpackage).register_fn("mkdir_chdir", functions::mkdir_chdir);
     if arg.len() == 1 {
         info!("Type {} help for help", arg[0])
     }
@@ -66,11 +64,9 @@ async fn main() {
                 if Path::new(&home_dir().unwrap())
                     .join(format!(".mtos/pkgs/{}", arg[pkg]))
                     .exists()
-                    .await
                     && Path::new(&temp_dir())
                         .join(format!(".mtos/pkgs/{}", arg[pkg]))
                         .exists()
-                        .await
                 {
                     info!(
                         "Use {} remove if you want to remove the package",
@@ -79,10 +75,8 @@ async fn main() {
                     exit(1);
                 } else if Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
                     .exists()
-                    .await
                     && Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
                         .exists()
-                        .await
                 {
                     info!(
                         "Use {} remove if you want to remove the package",
