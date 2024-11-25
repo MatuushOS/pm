@@ -1,14 +1,30 @@
 use crate::is_root;
+use iter::once;
 use log::{error, info, trace};
 use regex::Regex;
 use std::{
-    env::{remove_var, set_current_dir, set_var, temp_dir},
-    fs::{read_dir, remove_dir_all, rename, DirBuilder},
+    env::{
+        set_current_dir,
+        remove_var,
+        set_var,
+        temp_dir
+    },
+    fs::{
+        create_dir,
+        read_dir,
+        remove_dir_all,
+        rename,
+        DirBuilder
+    },
+    iter,
     os::unix::fs::symlink,
     path::Path,
-    process::{exit, Command, ExitStatus},
+    process::{
+        exit,
+        Command,
+        ExitStatus
+    }
 };
-use std::fs::create_dir;
 use xdg_home::home_dir;
 pub fn mkdir_chdir(dir: &str) {
     create_dir(dir).unwrap();
@@ -162,4 +178,24 @@ pub fn download(
         error!("FILE IS UNSAFE TO USE, STOPPING THE OPERATION NOW!!");
         exit(1);
     }
+}
+pub fn copy_remote(host: &str, source: &str, dest: &str) {
+    Command::new("scp")
+        .args([source, format!("{host}:{dest}").as_str()])
+        .status()
+        .unwrap();
+}
+pub fn copy_local(source: &str, dest: &str) {
+    Command::new("cp").args([source, dest]).status().unwrap();
+}
+pub fn remote_step(host: &str, cmd: &str, args: &str) -> ExitStatus {
+    let after_split: Vec<_> = args.split_whitespace().collect();
+    Command::new("ssh")
+        .args(
+            once(host)
+                .chain(once(cmd))
+                .chain(after_split.iter().copied()),
+        )
+        .status()
+        .unwrap()
 }

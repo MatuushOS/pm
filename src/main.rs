@@ -1,13 +1,14 @@
 pub mod functions;
 
-use std::{
-    path::Path,
-    env::{args, temp_dir, var},
-    process::{exit, Command}
-};
+use functions::*;
 use log::{error, info};
 use regex::Regex;
 use rhai::Engine;
+use std::{
+    env::{args, temp_dir, var},
+    path::Path,
+    process::{exit, Command},
+};
 use xdg_home::home_dir;
 
 pub fn is_root() -> bool {
@@ -25,13 +26,17 @@ fn main() {
     let mut parse = Engine::new();
     let arg: Vec<String> = args().collect();
     parse
-        .register_fn("download", functions::download)
-        .register_fn("download_extract", functions::download_extract)
-        .register_fn("set_env", functions::set_env)
-        .register_fn("unset_env", functions::unset_env)
-        .register_fn("install", functions::install)
-        .register_fn("step", functions::step)
-        .register_fn("mkpackage", functions::mkpackage).register_fn("mkdir_chdir", functions::mkdir_chdir);
+        .register_fn("download", download)
+        .register_fn("download_extract", download_extract)
+        .register_fn("set_env", set_env)
+        .register_fn("unset_env", unset_env)
+        .register_fn("install", install)
+        .register_fn("step", step)
+        .register_fn("mkpackage", mkpackage)
+        .register_fn("mkdir_chdir", mkdir_chdir)
+        .register_fn("copy_remote", copy_remote)
+        .register_fn("copy_local", copy_local)
+        .register_fn("remote_step", remote_step);
     if arg.len() == 1 {
         info!("Type {} help for help", arg[0])
     }
@@ -73,16 +78,6 @@ fn main() {
                         arg[0]
                     );
                     exit(1);
-                } else if Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
-                    .exists()
-                    && Path::new(format!("/mtos/pkgs/{}", arg[pkg]).as_str())
-                        .exists()
-                {
-                    info!(
-                        "Use {} remove if you want to remove the package",
-                        arg[0]
-                    );
-                    exit(1);
                 }
                 info!("Making package {}", arg[pkg]);
                 parse
@@ -93,7 +88,7 @@ fn main() {
             }
         }
         "remove" => {
-            for remove in 2..=arg.len() - 1 {
+            for remove in 2..=arg.len() {
                 match is_root() {
                     true => {
                         for dir in [
