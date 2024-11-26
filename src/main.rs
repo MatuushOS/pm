@@ -1,3 +1,4 @@
+#![doc = include_str!("../README.md")]
 pub mod functions;
 
 use functions::*;
@@ -5,22 +6,16 @@ use log::{error, info};
 use regex::Regex;
 use rhai::Engine;
 use std::{
-    env::{args, temp_dir, var},
+    env::{
+        args,
+        temp_dir
+    },
     path::Path,
-    process::{exit, Command},
+    process::exit
 };
 use xdg_home::home_dir;
 
-pub fn is_root() -> bool {
-    let user = var("USER");
-    Command::new("id")
-        .args(["-u", user.unwrap().as_str()])
-        .status()
-        .unwrap()
-        .code()
-        .unwrap()
-        == 1000
-}
+
 fn main() {
     colog::init();
     let mut parse = Engine::new();
@@ -57,7 +52,7 @@ fn main() {
                 println!("{name}\n{contents}")
             }
         }
-        "install" => {
+        "install" | "run" => {
             if arg[2..arg.len()].is_empty() {
                 info!(
                     "Syntax: {} build [PACKAGE]\nType {} help for more information",
@@ -88,7 +83,7 @@ fn main() {
             }
         }
         "remove" => {
-            for remove in 2..=arg.len() {
+            for remove in 2..arg.len() - 1 {
                 match is_root() {
                     true => {
                         for dir in [

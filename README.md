@@ -9,12 +9,12 @@ You can just clone this repository, run `cargo build --workspace --release` and 
 
 ## To do list
 - [x] Make installing packages work.
-- [ ] Add more functions for configuring MatuushOS.
+- [x] Add more functions for configuring MatuushOS.
 - [ ] Integrate with [mtinit](https://github.com/MatuushOS/mtinit).
 
 ## `pm` options
 
-```
+```text
 [*] Package manager
 [*] Usage: target/debug/pm OPTIONS [ARGUMENTS].
  |  

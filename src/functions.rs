@@ -1,11 +1,11 @@
-use crate::is_root;
 use iter::once;
 use log::{error, info, trace};
 use regex::Regex;
+use std::os::unix::prelude::ExitStatusExt;
 use std::{
     env::{
-        set_current_dir,
         remove_var,
+        set_current_dir,
         set_var,
         temp_dir
     },
@@ -25,7 +25,18 @@ use std::{
         ExitStatus
     }
 };
+use std::env::var;
 use xdg_home::home_dir;
+pub fn is_root() -> bool {
+    let user = var("USER");
+    Command::new("id")
+        .args(["-u", user.unwrap().as_str()])
+        .status()
+        .unwrap()
+        .code()
+        .unwrap()
+        == 1000
+}
 pub fn mkdir_chdir(dir: &str) {
     create_dir(dir).unwrap();
     set_current_dir(dir).unwrap()
@@ -179,23 +190,95 @@ pub fn download(
         exit(1);
     }
 }
+/// Copies a file from the local system to a remote system using SCP.
+/// 
+/// # Arguments
+/// 
+/// * `host` - The remote host to copy the file to.
+/// * `source` - The source file path on the local system.
+/// * `dest` - The destination file path on the remote system.
+/// 
+/// # Example
+/// 
+/// ```
+/// copy_remote("example.com", "/local/path/file.txt", "/remote/path/file.txt");
+/// ```
 pub fn copy_remote(host: &str, source: &str, dest: &str) {
     Command::new("scp")
         .args([source, format!("{host}:{dest}").as_str()])
         .status()
         .unwrap();
 }
+
+/// Copies a file from one location to another on the local system.
+/// 
+/// # Arguments
+/// 
+/// * `source` - The source file path on the local system.
+/// * `dest` - The destination file path on the local system.
+/// 
+/// # Example
+/// 
+/// ```
+/// copy_local("/local/path/file.txt", "/new/path/file.txt");
+/// ```
 pub fn copy_local(source: &str, dest: &str) {
     Command::new("cp").args([source, dest]).status().unwrap();
 }
+
+/// Executes a command on a remote system over SSH.
+/// 
+/// # Arguments
+/// 
+/// * `host` - The remote host to connect to.
+/// * `cmd` - The command to run on the remote host.
+/// * `args` - A string of arguments to pass to the command.
+/// 
+/// # Returns
+/// 
+/// Returns the exit status of the remote command.
+/// 
+/// # Example
+/// 
+/// ```
+/// let status = remote_step("example.com", "ls", "-l /home");
+/// ```
 pub fn remote_step(host: &str, cmd: &str, args: &str) -> ExitStatus {
-    let after_split: Vec<_> = args.split_whitespace().collect();
+    info!("Running remote step on {host} with {cmd} {args}");
+    let args: Vec<_> = args.split_whitespace().collect();
     Command::new("ssh")
         .args(
             once(host)
                 .chain(once(cmd))
-                .chain(after_split.iter().copied()),
+                .chain(args.iter().copied()),
         )
         .status()
         .unwrap()
+}
+/// Runs a remote command on a specified host and returns the termination signal of the command.
+/// 
+/// # Arguments 
+/// 
+/// * `host`: The hostname and IP address of the remote machine.
+/// * `cmd`: The command to execute on the remote machine.
+/// * `args`: Arguments to pass to the command.
+/// 
+/// returns: i32 - The signal number that caused the command to terminate 
+/// 
+/// # Examples 
+/// 
+/// ```
+/// let signal = remote_step_unary("user@example.com", "ls", "-la");
+/// println!("Terminated with signal: {}", signal);
+pub fn remote_step_unary(host: &str, cmd: &str, args: &str) -> i32 {
+    info!("Running remote step on {host} with {cmd} {args}");
+    let args: Vec<_> = args.split_whitespace().collect();
+    Command::new("ssh")
+        .args(
+            once(host)
+                .chain(once(cmd))
+                .chain(args.iter().copied()),
+        )
+        .status()
+        .unwrap().signal().unwrap()
 }
