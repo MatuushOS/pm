@@ -201,7 +201,7 @@ pub fn download(
 /// # Example
 /// 
 /// ```
-/// copy_remote("example.com", "/local/path/file.txt", "/remote/path/file.txt");
+/// copy_remote("matus@example.com", "/local/path/file.txt", "/remote/path/file.txt");
 /// ```
 pub fn copy_remote(host: &str, source: &str, dest: &str) {
     Command::new("scp")
