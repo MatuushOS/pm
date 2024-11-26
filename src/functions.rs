@@ -201,7 +201,7 @@ pub fn download(
 /// # Example
 /// 
 /// ```
-/// copy_remote("matus@example.com", "/local/path/file.txt", "/remote/path/file.txt");
+/// copy_remote("user@example.com", "/local/path/file.txt", "/remote/path/file.txt");
 /// ```
 pub fn copy_remote(host: &str, source: &str, dest: &str) {
     Command::new("scp")
@@ -241,7 +241,7 @@ pub fn copy_local(source: &str, dest: &str) {
 /// # Example
 /// 
 /// ```
-/// let status = remote_step("example.com", "ls", "-l /home");
+/// let status = remote_step("user@example.com", "ls", "-l /home");
 /// ```
 pub fn remote_step(host: &str, cmd: &str, args: &str) -> ExitStatus {
     info!("Running remote step on {host} with {cmd} {args}");

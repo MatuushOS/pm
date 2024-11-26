@@ -21,6 +21,7 @@ fn main() {
     let mut parse = Engine::new();
     let arg: Vec<String> = args().collect();
     parse
+        .register_fn("is_root", is_root)
         .register_fn("download", download)
         .register_fn("download_extract", download_extract)
         .register_fn("set_env", set_env)
